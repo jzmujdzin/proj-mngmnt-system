@@ -6,4 +6,10 @@ from typing import Tuple
 class Column:
     column_name: str
     d_type: str
-    data_ranges: Tuple[int, int]
+
+
+@dataclass
+class Table:
+    table_name: str
+    rows: int
+    column_info: Tuple[Column]
