@@ -1,6 +1,8 @@
 from typing import Tuple
-from tools.table_data import Column
+
 import pandas as pd
+
+from tools.table_data import Column
 
 
 def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
@@ -16,14 +18,14 @@ def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
     Returns:
     String in the form of SQL query that when executed by cursor, creates the table
     """
-    col_create = ''
+    col_create = ""
     for column in column_info:
-        col_create += f'''{column.column_name} {column.d_type} {',' if column.column_name != column_info[-1].column_name else ''}'''
-    create_table_query = f'''
+        col_create += f"""{column.column_name} {column.d_type} {',' if column.column_name != column_info[-1].column_name else ''}"""
+    create_table_query = f"""
     CREATE TABLE {table_name} (
         {col_create}
     )
-                         '''
+                         """
     return create_table_query
 
 
@@ -39,18 +41,18 @@ def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
     Returns:
     String in the form of SQL query that when executed by cursor, inserts values into the table
     """
-    values = ''
-    columns = ''
+    values = ""
+    columns = ""
     # iterates over columns and appends them to the columns string
     # df.columns.values returns i.e. array(['nums', 'letters'], dtype=object)
     # this converts it to (nums, letters) for applicable to be executed inside the query
     for col in df.columns.values:
-        columns += col + ','
+        columns += col + ","
     # strips the last, obsolete comma
     columns = columns[:-1]
     # iterates over all rows
     for row in df.iterrows():
-        row_values = '('
+        row_values = "("
         # iterates over every cell
         for i in range(len(df.columns)):
             cell = row[1][i]
@@ -59,15 +61,15 @@ def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
             # i.e. we have two values, 'a' and 1
             # for a, it adds 'a' to query, for 1 it adds 1 to query
             if isinstance(cell, int):
-                row_values += str(cell) + ','
+                row_values += str(cell) + ","
             else:
-                row_values += f''' '{str(cell)}','''
+                row_values += f""" '{str(cell)}',"""
         row_values = row_values[:-1]
-        row_values += '),'
+        row_values += "),"
         values += row_values
     values = values[:-1]
-    insert_values_query = f'''
+    insert_values_query = f"""
     INSERT INTO {table_name}({columns})
     VALUES {values}
-                           '''
+                           """
     return insert_values_query
