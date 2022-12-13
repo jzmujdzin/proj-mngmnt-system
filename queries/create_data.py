@@ -1,8 +1,8 @@
-from typing import List
+from typing import Tuple
 from tools.table_data import Column
 
 
-def create_table_q(table_name: str, column_info: List[Column]) -> str:
+def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
     col_create = ''
     for column in column_info:
         col_create += f'''{column.column_name} {column.d_type} {',' if column.column_name != column_info[-1].column_name else ''}'''
