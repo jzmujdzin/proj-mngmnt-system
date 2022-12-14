@@ -21,7 +21,7 @@ class DataGenerator:
 
     def generate_data_for_column(self, col: Column) -> List:
         return [
-            get_random_choice_for_type(col.d_type) for row in range(self.table.rows)
+            get_random_choice_for_type(col.d_type) for _ in range(self.table.rows)
         ]
 
     def generate_data_for_table(self) -> dict:
