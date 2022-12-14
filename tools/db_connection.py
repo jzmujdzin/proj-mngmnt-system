@@ -1,5 +1,5 @@
-import sqlite3
 import os
+import sqlite3
 from pathlib import Path
 
 
@@ -8,5 +8,5 @@ class ConnectionClient:
         self.connection = self.sqlite_con()
 
     @staticmethod
-    def sqlite_con(db_file: str = 'cpmgs_db'):
-        return sqlite3.connect(Path(os.path.abspath(os.curdir)) / '..' / db_file)
+    def sqlite_con(db_file: str = "cpmgs_db"):
+        return sqlite3.connect(Path(os.path.abspath(os.curdir)) / ".." / db_file)
