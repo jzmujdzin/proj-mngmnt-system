@@ -33,11 +33,13 @@ class DataGenerator:
         df = pd.DataFrame(self.generate_data_for_table())
         q = insert_values_q(self.table.table_name, df)
         self.cur.execute(q)
+        self.con.commit()
         logger.info(f"inserted values into {self.table.table_name}")
 
     def create_table(self) -> None:
         q = create_table_q(self.table.table_name, self.table.column_info)
         self.cur.execute(q)
+        self.con.commit()
         logger.info(f"created {self.table.table_name}")
 
 
@@ -46,3 +48,4 @@ if __name__ == '__main__':
     Column(column_name='column_1', d_type='INTEGER'), Column(column_name='column_2', d_type='VARCHAR(32)')))
     c_client = ConnectionClient().connection
     dg = DataGenerator(t1, c_client)
+    #dg.con.close()
