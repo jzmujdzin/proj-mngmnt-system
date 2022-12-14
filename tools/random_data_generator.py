@@ -12,7 +12,7 @@ from queries.create_data import create_table_q, insert_values_q
 class DataGenerator:
     def __init__(self, table: Table, con: sqlite3.Connection):
         """
-        Generates random data for each of column in passed table_name, with provided data_ranges.
+        Generates random data for each of column in passed table_name.
         """
         self.table = table
         self.con = con
