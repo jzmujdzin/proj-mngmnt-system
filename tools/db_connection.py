@@ -1,12 +1,28 @@
 import os
 import sqlite3
 from pathlib import Path
+import pandas as pd
 
 
-class ConnectionClient:
-    def __init__(self):
-        self.connection = self.sqlite_con()
+def select_wrapper(q_to_execute):
+    def wrapper(*args, **kwargs):
+        con = sqlite3.connect(Path(os.path.abspath(os.curdir)) / ".." / "cpmgs_db")
+        df = pd.read_sql_query(q_to_execute(*args, **kwargs), con)
+        con.close()
+        return df
+    return wrapper
 
-    @staticmethod
-    def sqlite_con(db_file: str = "cpmgs_db"):
-        return sqlite3.connect(Path(os.path.abspath(os.curdir)) / ".." / db_file)
+
+def tx_wrapper(tx_to_execute):
+    def wrapper(*args, **kwargs):
+        con = sqlite3.connect(Path(os.path.abspath(os.curdir)) / ".." / "cpmgs_db")
+        cur = con.cursor()
+        cur.execute(tx_to_execute(*args, **kwargs))
+        cur.commit()
+        con.close()
+        return
+    return wrapper
+
+
+if __name__ == '__main__':
+    pass
