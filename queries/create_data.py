@@ -3,8 +3,10 @@ from typing import Tuple
 import pandas as pd
 
 from tools.table_data import Column
+from tools.db_connection import tx_wrapper
 
 
+@tx_wrapper
 def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
     """
     Creates query for table creation
@@ -29,6 +31,7 @@ def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
     return create_table_query
 
 
+@tx_wrapper
 def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
     """
     Inserts values from dataframe into table
