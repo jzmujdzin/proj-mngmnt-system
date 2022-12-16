@@ -76,3 +76,19 @@ def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
     VALUES {values}
                            """
     return insert_values_query
+
+
+@tx_wrapper
+def create_email_validation_trigger():
+    q = '''
+        CREATE TRIGGER validate_email_on_customerinfo_insertion
+        BEFORE INSERT ON customerInfo
+        BEGIN
+           SELECT
+              CASE
+            WHEN NEW.email NOT LIKE '%_@__%.__%' THEN
+              RAISE (ABORT,'Invalid email address')
+               END;
+        END;
+        '''
+    return q
