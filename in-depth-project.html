@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Project Info </title>
+        <style>
+            Body {
+                background-color: grey;
+                margin: 0px;
+            }
+            
+            hr {
+                border: 2px solid black;
+            }
+            
+            img {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .pinfo {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                
+                grid-gap: 1.7em;
+                padding: 1.2em;
+                padding-left: 100px;
+                padding-top: 50px;
+            }
+
+            .label {
+                grid-column: labels;
+                grid-row: auto;
+            }
+            
+            .myForm > input {
+                grid-column: controls;
+                grid-row: auto;
+                border: none;
+                padding: 1em;
+                
+            }
+            
+            input,
+            textarea{
+                width: 450px;
+                padding: 5px;
+            }
+            
+            textarea {
+                height: 100px;
+            }
+            
+            .resp-users {
+                padding-top: 120px;
+            }
+            
+            .submit-button {
+                padding-left: 420px
+            }
+            
+            button {
+                /*background-color: grey;
+                color: grey;*/
+                padding: 10px;
+                border: none;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class='in-depth-project'>
+            <h2>
+                In-depth information for, {projectName}
+            </h2>
+        </div>
+        <hr>
+        <div class ='pinfo'>
+                <label for='pname'>Project Name</label>
+                <input type='text' id='pname-text' placeholder='Project 1'>
+
+
+                <label for='cname'>Customer</label>
+                <input type='text' id='cname-text' placeholder='Customer 1'>
+
+
+                <label for='pdesc'>Project description</label>
+                <textarea name='pdesc' id='pdesc-text' maxlength="2001" placeholder='Long project description 1'></textarea>
+
+            <div class='resp-users'>
+                <table>
+                    <tr>Responsible users:</tr>
+                    <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
+                    <td>user1</td>
+                    <tr></tr>
+                    <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
+                    <td>user2</td>
+                </table>
+            </div>
+        </div>
+        <div class='submit-button'>
+            <button>Submit</button>
+        </div>
+    </body>
+</html>
