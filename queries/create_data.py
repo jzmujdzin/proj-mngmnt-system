@@ -92,3 +92,12 @@ def create_email_validation_trigger():
         END;
         '''
     return q
+
+
+@tx_wrapper
+def create_index(index_name: str, table_name: str, col_list: str):
+    q = f'''
+        CREATE INDEX {index_name}
+        ON {table_name} ({col_list}); 
+        '''
+    return q
