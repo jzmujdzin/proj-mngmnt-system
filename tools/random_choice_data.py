@@ -10,4 +10,3 @@ def get_random_choice_for_type(dtype: str):
         return "".join((random.choice(letters)) for _ in range(str_length))
     else:
         raise TypeError("DType not supported for random choice")
-

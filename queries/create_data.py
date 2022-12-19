@@ -1,9 +1,8 @@
 from typing import Tuple
 
 import pandas as pd
-
-from tools.table_data import Column
 from tools.db_connection import tx_wrapper
+from tools.table_data import Column
 
 
 @tx_wrapper
@@ -80,7 +79,7 @@ def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
 
 @tx_wrapper
 def create_email_validation_trigger():
-    q = '''
+    q = """
         CREATE TRIGGER validate_email_on_customerinfo_insertion
         BEFORE INSERT ON customerInfo
         BEGIN
@@ -90,14 +89,14 @@ def create_email_validation_trigger():
               RAISE (ABORT,'Invalid email address')
                END;
         END;
-        '''
+        """
     return q
 
 
 @tx_wrapper
 def create_index(index_name: str, table_name: str, col_list: str):
-    q = f'''
+    q = f"""
         CREATE INDEX {index_name}
         ON {table_name} ({col_list}); 
-        '''
+        """
     return q

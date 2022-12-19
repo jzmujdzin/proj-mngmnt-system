@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from pathlib import Path
+
 import pandas as pd
 
 
@@ -10,6 +11,7 @@ def select_wrapper(q_to_execute):
         df = pd.read_sql_query(q_to_execute(*args, **kwargs), con)
         con.close()
         return df
+
     return wrapper
 
 
@@ -21,8 +23,9 @@ def tx_wrapper(tx_to_execute):
         cur.commit()
         con.close()
         return
+
     return wrapper
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
