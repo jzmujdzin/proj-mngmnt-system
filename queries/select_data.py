@@ -60,7 +60,7 @@ def get_customer_info_for_customer_screen(cust_id: int):
         FROM customerInfo ci
         JOIN customers c on c.cust_id = ci.cust_id
         WHERE c.cust_id = {cust_id};
-            """
+        """
     return q
 
 
@@ -75,4 +75,35 @@ def get_project_info_for_in_depth_project_screen(p_id: int):
         JOIN projects p on pi.p_id = p.p_id
         WHERE pi.p_id = {p_id};
         """
+    return q
+
+
+@select_wrapper
+def get_users_from_list(u_list: str):
+    usrs = '(' + ','.join(u_list) + ')'
+    q = f'''
+        SELECT name || ' ' || surname name, pic_URL
+        FROM userInfo
+        WHERE u_id IN {usrs}
+        '''
+    return q
+
+
+@select_wrapper
+def check_for_project_editing_permissions(u_id: int, p_id: int):
+    q = f'''
+        WITH user_permission_lvl AS (
+        SELECT permission_lvl
+        FROM userRoles ur
+        JOIN roles r ON ur.role_id = r.role_id
+        WHERE u_id = {u_id}
+        ),
+        project_permission_lvl AS (
+        SELECT permission_lvl
+        FROM projectPermissions
+        WHERE p_id = {p_id}
+        )
+        SELECT upl.permission_lvl <= ppl.permission_lvl has_sufficient_perm
+        FROM user_permission_lvl upl, project_permission_lvl ppl
+        '''
     return q

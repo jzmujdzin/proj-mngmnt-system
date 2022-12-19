@@ -26,11 +26,6 @@
                 padding-left: 100px;
                 padding-top: 50px;
             }
-
-            .label {
-                grid-column: labels;
-                grid-row: auto;
-            }
             
             .myForm > input {
                 grid-column: controls;
@@ -57,43 +52,57 @@
             .submit-button {
                 padding-left: 420px
             }
-            
-            button {
-                /*background-color: grey;
-                color: grey;*/
+
+        </style>
+
+        {% block head %}
+            {% if user_edit_perm %}
+             <style>
+             button {
                 padding: 10px;
                 border: none;
             }
-        </style>
+             </style>
+            {% else %}
+             <style>
+             button {
+                background-color: grey;
+                color: grey;
+                padding: 10px;
+                border: none;
+            }
+             </style>
+            {% endif %}
+        {% endblock %}
     </head>
     
     <body>
         <div class='in-depth-project'>
             <h2>
-                In-depth information for, {projectName}
+                In-depth information for {{ p_info.get('p_name') }}
             </h2>
         </div>
         <hr>
         <div class ='pinfo'>
                 <label for='pname'>Project Name</label>
-                <input type='text' id='pname-text' placeholder='Project 1'>
+                <input type='text' id='pname-text' placeholder="{{ p_info.get('p_name') }}">
 
 
                 <label for='cname'>Customer</label>
-                <input type='text' id='cname-text' placeholder='Customer 1'>
+                <input type='text' id='cname-text' placeholder="{{ p_info.get('customer') }}">
 
 
                 <label for='pdesc'>Project description</label>
-                <textarea name='pdesc' id='pdesc-text' maxlength="2001" placeholder='Long project description 1'></textarea>
+                <textarea name='pdesc' id='pdesc-text' maxlength="2001" placeholder="{{ p_info.get('p_long_description') }}"></textarea>
 
             <div class='resp-users'>
                 <table>
                     <tr>Responsible users:</tr>
+                    {% for user in assigned_u %}
                     <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
-                    <td>user1</td>
+                    <td> {{ assigned_u.get(user).get('name') }} </td>
                     <tr></tr>
-                    <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
-                    <td>user2</td>
+                    {% endfor %}
                 </table>
             </div>
         </div>
