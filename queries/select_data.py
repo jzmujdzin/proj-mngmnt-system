@@ -16,7 +16,9 @@ def get_projects_for_projects_screen(u_id: int):
     q = f"""
         SELECT p_name, 
                p_short_description,
-               c.name
+               c.name,
+               p.p_id,
+               c.cust_id
         FROM projects p
         JOIN customers c ON p.cust_id = c.cust_id
         JOIN projectInfo pi ON pi.p_id = p.p_id

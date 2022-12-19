@@ -10,6 +10,8 @@
             
             hr {
                 border: 2px solid black;
+                color: black;
+                width: 100%;
             }
             
             .projects-title {
@@ -97,7 +99,7 @@
                 {% if projects_dict %}
                     {% for proj in projects_dict %}
                         <tr>
-                            <td class='td-proj-cust'> {{ projects_dict.get(proj).get('p_name') }} </td>
+                            <td class='td-proj-cust'> <a href="http://127.0.0.1:8000/project-page/{{projects_dict.get(proj).get('p_id')}}/{{u_id}}"> {{ projects_dict.get(proj).get('p_name') }} </a> </td>
                             <td> {{ projects_dict.get(proj).get('p_short_description') }} </td>
                             <td class='td-proj-cust'>{{ projects_dict.get(proj).get('name') }}</td>
                         </tr>
