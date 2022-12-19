@@ -1,10 +1,11 @@
 from typing import Tuple
 
 import pandas as pd
-
+from tools.db_connection import tx_wrapper
 from tools.table_data import Column
 
 
+@tx_wrapper
 def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
     """
     Creates query for table creation
@@ -29,6 +30,7 @@ def create_table_q(table_name: str, column_info: Tuple[Column]) -> str:
     return create_table_query
 
 
+@tx_wrapper
 def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
     """
     Inserts values from dataframe into table
@@ -73,3 +75,28 @@ def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
     VALUES {values}
                            """
     return insert_values_query
+
+
+@tx_wrapper
+def create_email_validation_trigger():
+    q = """
+        CREATE TRIGGER validate_email_on_customerinfo_insertion
+        BEFORE INSERT ON customerInfo
+        BEGIN
+           SELECT
+              CASE
+            WHEN NEW.email NOT LIKE '%_@__%.__%' THEN
+              RAISE (ABORT,'Invalid email address')
+               END;
+        END;
+        """
+    return q
+
+
+@tx_wrapper
+def create_index(index_name: str, table_name: str, col_list: str):
+    q = f"""
+        CREATE INDEX {index_name}
+        ON {table_name} ({col_list}); 
+        """
+    return q
