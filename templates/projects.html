@@ -10,6 +10,8 @@
             
             hr {
                 border: 2px solid black;
+                color: black;
+                width: 100%;
             }
             
             .projects-title {
@@ -76,10 +78,10 @@
     <body>
         <div class='hello-user'>
             <h2>
-                Hello, {user}
+                Hello, {{ name.get('name')[0] }}
             </h2>
                     <div class='user-avatar'>
-            <img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'>
+                        <a href="http://127.0.0.1:8000/users/{{u_id}}"><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></a>
         </div>
         </div>
 
@@ -94,21 +96,19 @@
                 <th class='th-project-name'> Project name </th>
                 <th class='th-project-desc'> Project description</th>
                 <th class='th-customer'> Customer </th>
-                <tr>
-                    <td class='td-proj-cust'> Project 1</td>
-                    <td> Short project description 1</td>
-                    <td class='td-proj-cust'> Customer 1</td>
-                </tr>
-                <tr>
-                    <td class='td-proj-cust'> Project 2</td>
-                    <td> Short project description 2</td>
-                    <td class='td-proj-cust'> Customer 2</td>
-                </tr>
-                <tr>
-                    <td class='td-proj-cust'> Project 3</td>
-                    <td> Short project description 3</td>
-                    <td class='td-proj-cust'> Customer 3</td>
-                </tr>
+                {% if projects_dict %}
+                    {% for proj in projects_dict %}
+                        <tr>
+                            <td class='td-proj-cust'> <a href="http://127.0.0.1:8000/project-page/{{projects_dict.get(proj).get('p_id')}}/{{u_id}}"> {{ projects_dict.get(proj).get('p_name') }} </a> </td>
+                            <td> {{ projects_dict.get(proj).get('p_short_description') }} </td>
+                            <td class='td-proj-cust'>{{ projects_dict.get(proj).get('name') }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <td></td>
+                    <td>no projects available</td>
+                    <td></td>
+                {% endif %}
             </table>
         </div>
     </body>
