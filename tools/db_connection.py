@@ -20,7 +20,7 @@ def tx_wrapper(tx_to_execute):
         con = sqlite3.connect(Path(__file__).parents[1] / "cpmgs_db")
         cur = con.cursor()
         cur.execute(tx_to_execute(*args, **kwargs))
-        cur.commit()
+        con.commit()
         con.close()
         return
 

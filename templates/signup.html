@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> CPMS Sign up </title>
+        <style>
+            Body {
+                background-color: grey;
+            }
+            .login_text {
+                display: flex;
+                align-text: center;
+                justify-content: center;
+                padding: 100px;
+            }
+            .login-wrapper {
+                display: flex;
+                flex-direction: column;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+            }
+
+            label{
+                display: flex;
+                gap: 20px;
+                padding: 5px;
+                align-items: center;
+            }
+
+            .authors {
+                display: flex;
+                justify-content: right;
+                padding-top: 300px;
+            }
+            .button {
+                display: flex;
+                align-text: center;
+                justify-content: center;
+
+            }
+
+            .button1 {
+                width: 80px;
+            }
+
+            input {
+                text-align: center;
+                width: 200px;
+                height: 30px;
+            }
+
+            .user-exists {
+                color: darkred;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class='login_text'>
+            <h1>
+                CRMS Sign up
+            </h1>
+        </div>
+
+        <form method="POST" action="/signup">
+            <div class='login-wrapper'>
+                <p>Please fill in the data below</p>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="user-exists">
+                    <b> {{ messages[0] }} </b>
+                </div>
+                {% endif %}
+                {% endwith %}
+                <label class='usern'>
+                    <p>username</p><input type='text' name='username' placeholder="your username">
+                </label>
+                <label class='passw'>
+                    <p>password</p><input type='text' name='password' placeholder="your password">
+                </label>
+            </div>
+            <div class='button'>
+                <button class='button1' type='submit'>Sign up</button>
+            </div>
+        </form>
+        <div class="login_text">
+            Back to &nbsp; <a href="login">login page</a>
+        </div>
+        <div class='authors'>
+            <p>Jakub Żmujdzin </p>
+
+        </div>
+    </body>
+</html>

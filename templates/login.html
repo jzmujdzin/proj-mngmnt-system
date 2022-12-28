@@ -48,6 +48,10 @@
                 width: 200px;
                 height: 30px;
             }
+
+            .user-exists {
+                color: darkred;
+            }
         </style>
     </head>
     
@@ -57,21 +61,31 @@
                 CRMS Login
             </h1>
         </div>
-        
-        <div class='login-wrapper'>
-            <p>Please log in to continue</p>
-            <label class='usern'>
-                <p>username</p><input type='text' name='username'>
-            </label>
-            <label class='passw'>
-                <p>password</p><input type='text' name='password'>
-            </label>
-        </div>
-        <div class='button'>
-            <button class='button1' type='submit'>Log in</button>
+        <form method="POST" action="/login">
+            <div class='login-wrapper'>
+                <p>Please log in to continue</p>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="user-exists">
+                    <b> {{ messages[0] }} </b>
+                </div>
+                {% endif %}
+                {% endwith %}
+                <label class='usern'>
+                    <p>username</p><input type='text' name='username' placeholder="your username">
+                </label>
+                <label class='passw'>
+                    <p>password</p><input type='text' name='password' placeholder="your password">
+                </label>
+            </div>
+            <div class='button'>
+                <button class='button1' type='submit'>Log in</button>
+            </div>
+        </form>
+        <div class="login_text">
+            Don't have an account? &nbsp; <a href="signup">Sign up here</a>
         </div>
         <div class='authors'>
-            <p>Jakub Wujec, &nbsp;</p>
             <p>Jakub Żmujdzin </p>
             
         </div>

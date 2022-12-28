@@ -12,6 +12,46 @@ def get_user_name(u_id: int):
 
 
 @select_wrapper
+def get_user_info(u_id: int):
+    q = f'''
+        SELECT *
+        FROM userInfo
+        WHERE u_id = {u_id}
+        '''
+    return q
+
+
+@select_wrapper
+def check_if_user_exists(username: str):
+    q = f'''
+        SELECT username
+        FROM users
+        WHERE username = '{username.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
+def get_pwd_for_user_name(username: str):
+    q = f'''
+        SELECT password
+        FROM users
+        WHERE username = '{username.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
+def get_user_id_for_username(username: str):
+    q = f'''
+        SELECT u_id
+        FROM users
+        WHERE username = '{username.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
 def get_projects_for_projects_screen(u_id: int):
     q = f"""
         SELECT p_name, 

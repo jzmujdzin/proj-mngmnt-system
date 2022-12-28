@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Project Info </title>
+        <style>
+            body {
+                background-color: grey;
+                margin: 0px;
+            }
+
+            hr {
+                border: 2px solid black;
+            }
+
+            img {
+                width: 100px;
+                height: 100px;
+            }
+
+            input{
+                width: 250px;
+                padding: 5px;
+            }
+
+            .change-u-info,
+            .change-password{
+
+                    display: grid;
+                    grid-template-columns: 200px 1fr;
+                    grid-gap: 8px;
+                    align-items: center;
+            }
+
+            .password-head {
+                padding-top: 100px;
+                                width: 420px;
+                text-align: right;
+
+            }
+
+            label {
+                text-align: right;
+                padding-right: 20px;
+
+            }
+
+            .u-info-ch {
+                width: 420px;
+                text-align: right;
+            }
+
+            .u-info {
+                display: flex;
+
+            }
+
+            .change-u-info-img {
+                display: flex;
+                flex-direction: column;
+                padding-left: 120px;
+            }
+
+            .button-pic {
+                margin-top: 10px;
+            }
+
+            .submit-button {
+                text-align: right;
+                margin-left: 300px;
+            }
+
+
+        </style>
+
+    </head>
+
+    <body>
+        <div class='in-depth-project'>
+            <h2>
+                User Profile
+            </h2>
+        </div>
+        <hr>
+        <h2 class='u-info-ch'>Change user info</h2>
+        <div class ='u-info'>
+            <div class='change-u-info'>
+
+                <label for='u-name'>name</label>
+                <input type='text' id='u-name' placeholder="{{ p_info.get('p_name') }}">
+
+                <label for='u-surname'>surname</label>
+                <input type='text' id='u-surname' placeholder="{{ p_info.get('customer') }}">
+
+
+                <label for='u-address'>address</label>
+                <input name='u-address' id='u-address' placeholder="{{ p_info.get('p_long_description') }}">
+                <div class='submit-button'>
+                    <button>Confirm</button>
+                </div>
+            </div>
+            <div class='change-u-info-img'>
+                <img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'>
+                <button class='button-pic'>Change pic</button>
+            </div>
+         </div>
+        <h2 class='password-head'>Change password</h2>
+
+         <div class ='change-password'>
+
+
+                <label for='old-pwd'>old password</label>
+                <input type='text' id='old-pwd' placeholder="{{ p_info.get('p_name') }}">
+
+                <label for='new-pwd'>new password</label>
+                <input type='text' id='new-pwd' placeholder="{{ p_info.get('customer') }}">
+
+
+                <label for='conf-new-pwd'>address</label>
+                <input type='text' id='conf-new-pwd' placeholder="{{ p_info.get('p_long_description') }}">
+                <div class='submit-button'>
+                    <button>Confirm</button>
+                </div>
+         </div>
+
+
+    </body>
+</html>
