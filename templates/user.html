@@ -58,6 +58,7 @@
                 display: flex;
                 flex-direction: column;
                 padding-left: 120px;
+                width: 100px;
             }
 
             .button-pic {
@@ -67,6 +68,24 @@
             .submit-button {
                 text-align: right;
                 margin-left: 300px;
+            }
+
+            .change-u-info-input {
+                width: 100px;
+                height: 20px;
+                padding: 0;
+                border: 0;
+                margin-top: 10px;
+            }
+
+            .error {
+                color: darkred;
+                margin-left: 10px;
+            }
+
+            .success {
+                color: darkgreen;
+                margin-left: 10px;
             }
 
 
@@ -82,14 +101,15 @@
         </div>
         <hr>
         <h2 class='u-info-ch'>Change user info</h2>
+        <form method="POST" action="/user">
         <div class ='u-info'>
             <div class='change-u-info'>
 
                 <label for='u-name'>name</label>
-                <input type='text' id='u-name' placeholder="{{ cu.name }}">
+                <input name='u-name' type='text' id='u-name' placeholder="{{ cu.name }}">
 
                 <label for='u-surname'>surname</label>
-                <input type='text' id='u-surname' placeholder="{{ cu.surname }}">
+                <input name='u-surname' type='text' id='u-surname' placeholder="{{ cu.surname }}">
 
 
                 <label for='u-address'>address</label>
@@ -100,6 +120,7 @@
             </div>
             <div class='change-u-info-img'>
                 <img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'>
+                <input class='change-u-info-input' name='u-pic' id='u-pic' placeholder="{{ cu.pic_URL }}">
                 <button class='button-pic'>Change pic</button>
             </div>
          </div>
@@ -109,19 +130,28 @@
 
 
                 <label for='old-pwd'>old password</label>
-                <input type='text' id='old-pwd' placeholder="">
+                <input name='old-pwd' type='password' id='old-pwd' placeholder="">
 
                 <label for='new-pwd'>new password</label>
-                <input type='text' id='new-pwd' placeholder="">
+                <input name='new-pwd' type='password' id='new-pwd' placeholder="">
 
 
                 <label for='conf-new-pwd'>address</label>
-                <input type='text' id='conf-new-pwd' placeholder="">
+                <input name='conf-new-pwd' type='password' id='conf-new-pwd' placeholder="">
                 <div class='submit-button'>
                     <button>Confirm</button>
                 </div>
          </div>
-
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class='{{category}}'>
+            <b> {{ message }} </b>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
     </body>
 </html>

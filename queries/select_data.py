@@ -42,6 +42,16 @@ def get_pwd_for_user_name(username: str):
 
 
 @select_wrapper
+def get_pwd_for_u_id(u_id: int):
+    q = f'''
+        SELECT password
+        FROM users
+        WHERE u_id = {u_id}
+        '''
+    return q
+
+
+@select_wrapper
 def get_user_id_for_username(username: str):
     q = f"""
         SELECT u_id

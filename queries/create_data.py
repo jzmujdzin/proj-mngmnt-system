@@ -2,9 +2,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from queries.select_data import get_user_id_for_username
+from queries.select_data import get_user_id_for_username, get_pwd_for_u_id
 from tools.db_connection import tx_wrapper
 from tools.table_data import Column
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 @tx_wrapper
@@ -144,6 +145,33 @@ def update_c_info(c_name: str, c_address: str, c_email: str, c_phone: str, cust_
         update_info(table_name='customerInfo', set_what=f'''cust_email = '{c_email}' ''', condition=f''' cust_id = {cust_id} ''')
     if c_phone != '':
         update_info(table_name='customerInfo', set_what=f'''cust_phone = '{c_phone}' ''', condition=f''' cust_id = {cust_id} ''')
+
+
+def update_u_info(name: str, surname: str, address: str, pic_URL: str, u_id: int):
+    if name == '' and surname == '' and address == '' and pic_URL == '':
+        return None
+    if name != '':
+        update_info(table_name='userInfo', set_what=f'''name = '{name}' ''', condition=f'''u_id = {u_id} ''')
+    if surname != '':
+        update_info(table_name='userInfo', set_what=f'''surname = '{surname}' ''', condition=f'''u_id = {u_id} ''')
+    if address != '':
+        update_info(table_name='userInfo', set_what=f'''address = '{address}' ''', condition=f'''u_id = {u_id} ''')
+    if pic_URL != '':
+        update_info(table_name='userInfo', set_what=f'''pic_URL = '{pic_URL}' ''', condition=f'''u_id = {u_id} ''')
+    return True
+
+
+def update_password(old_pwd: str, new_pwd: str, conf_new_pwd: str, u_id: int):
+    if old_pwd == '' and new_pwd == '' and conf_new_pwd == '':
+        return None
+    if new_pwd != conf_new_pwd:
+        return False
+    if not check_password_hash(
+        get_pwd_for_u_id(u_id)["password"][0], old_pwd
+    ):
+        return False
+    update_info(table_name='users', set_what=f'''password = '{generate_password_hash(new_pwd)}' ''', condition=f'''u_id = {u_id} ''')
+    return True
 
 
 @tx_wrapper

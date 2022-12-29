@@ -2,7 +2,7 @@ from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import LoginManager, current_user, login_required, login_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.create_data import create_user, update_p_info, update_c_info
+from queries.create_data import create_user, update_p_info, update_c_info, update_u_info, update_password
 from queries.select_data import (check_for_project_viewing_permissions,
                                  check_if_user_exists,
                                  get_project_info_for_in_depth_project_screen,
@@ -120,6 +120,21 @@ def in_depth_project_page_post(p_id: int):
 @login_required
 def user():
     return render_template("user.html", cu=current_user)
+
+
+@app.route('/user', methods=["POST"])
+def user_post():
+    new_info = {'name': request.form.get('u-name'), 'surname': request.form.get('u-surname'), 'address': request.form.get('u-address'),
+                'pic_URL': request.form.get('u-pic'), 'u_id': current_user.u_id}
+    pwd_info = {'old_pwd': request.form.get('old-pwd'), 'new_pwd': request.form.get('new-pwd'), 'conf_new_pwd': request.form.get('conf-new-pwd'), 'u_id': current_user.u_id}
+    if update_u_info(**new_info):
+        flash('Updated user information', 'success')
+    update_pwd_info = update_password(**pwd_info)
+    if update_pwd_info:
+        flash("Password changed succesfully.", 'success')
+    elif update_pwd_info is False:
+        flash("Wrong old password or new password and password confirmation did not match. Try again.", 'error')
+    return redirect(url_for('user'))
 
 
 @app.route("/customer/<string:cust_name>")
