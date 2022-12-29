@@ -160,3 +160,14 @@ def get_p_name(p_id: int):
         WHERE p_id = {p_id}
         """
     return q
+
+
+@select_wrapper
+def get_projects_for_customer(cust_id: int):
+    q = f'''
+        SELECT p_name, 
+               p_id
+        FROM projects
+        WHERE cust_id = {cust_id};
+        '''
+    return q

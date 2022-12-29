@@ -135,6 +135,17 @@ def update_p_info(p_id: int, pname: str, pdesc: str):
         )
 
 
+def update_c_info(c_name: str, c_address: str, c_email: str, c_phone: str, cust_id: int):
+    if c_name != '':
+        update_info(table_name='customers', set_what=f'''name = '{c_name}' ''', condition=f''' cust_id = {cust_id} ''')
+    if c_address != '':
+        update_info(table_name='customerInfo', set_what=f'''cust_address = '{c_address}' ''', condition=f''' cust_id = {cust_id} ''')
+    if c_email != '':
+        update_info(table_name='customerInfo', set_what=f'''cust_email = '{c_email}' ''', condition=f''' cust_id = {cust_id} ''')
+    if c_phone != '':
+        update_info(table_name='customerInfo', set_what=f'''cust_phone = '{c_phone}' ''', condition=f''' cust_id = {cust_id} ''')
+
+
 @tx_wrapper
 def update_info(table_name: str, set_what: str, condition: str):
     q = f"""

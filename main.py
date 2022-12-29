@@ -2,7 +2,7 @@ from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import LoginManager, current_user, login_required, login_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.create_data import create_user, update_p_info
+from queries.create_data import create_user, update_p_info, update_c_info
 from queries.select_data import (check_for_project_viewing_permissions,
                                  check_if_user_exists,
                                  get_project_info_for_in_depth_project_screen,
@@ -10,7 +10,8 @@ from queries.select_data import (check_for_project_viewing_permissions,
                                  get_pwd_for_user_name,
                                  get_user_id_for_username, get_user_info,
                                  get_user_name, get_users_from_list,
-                                 get_customer_info_for_customer_screen)
+                                 get_customer_info_for_customer_screen,
+                                 get_projects_for_customer)
 from tools.models import User
 
 app = Flask(__name__, template_folder="templates")
@@ -49,9 +50,9 @@ def login_post():
         return redirect(url_for("login"))
 
     u_id = get_user_id_for_username(username).iloc[0, 0]
-    user = User(**get_user_info(u_id).to_dict(orient="records")[0])
+    user_to_login = User(**get_user_info(u_id).to_dict(orient="records")[0])
 
-    login_user(user)
+    login_user(user_to_login)
     return redirect(url_for("projects"))
 
 
@@ -110,9 +111,9 @@ def in_depth_project_page(p_id: int):
 
 @app.route("/project-page/<int:p_id>", methods=["POST"])
 def in_depth_project_page_post(p_id: int):
-    new_info = {"pname": request.form.get("pname"), "pdesc": request.form.get("pdesc")}
-    update_p_info(p_id, new_info["pname"], new_info["pdesc"])
-    return redirect(url_for(f"in_depth_project_page", p_id=p_id))
+    new_info = {'p_id': p_id, "pname": request.form.get("pname"), "pdesc": request.form.get("pdesc")}
+    update_p_info(**new_info)
+    return redirect(url_for("in_depth_project_page", p_id=p_id))
 
 
 @app.route("/user")
@@ -122,9 +123,19 @@ def user():
 
 
 @app.route("/customer/<string:cust_name>")
+@login_required
 def customer(cust_name: str):
     c_info = get_customer_info_for_customer_screen(cust_name).iloc[0]
-    return render_template("customer.html", c_info=c_info)
+    cust_projects = get_projects_for_customer(c_info['cust_id']).to_dict(orient='index')
+    return render_template("customer.html", c_info=c_info, cust_projects=cust_projects, cust_name=cust_name)
+
+
+@app.route('/customer/<string:cust_name>', methods=["POST"])
+def customer_post(cust_name: str):
+    new_info = {'c_name': request.form.get('c-name'), 'c_address': request.form.get('c-address'),
+                'c_email': request.form.get('c-mail'), 'c_phone': request.form.get('c-phone'), 'cust_id': get_customer_info_for_customer_screen(cust_name).iloc[0]['cust_id']}
+    update_c_info(**new_info)
+    return redirect(url_for('customer', cust_name=cust_name))
 
 
 if __name__ == "__main__":

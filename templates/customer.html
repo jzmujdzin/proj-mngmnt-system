@@ -37,12 +37,28 @@
             }
             .u-info {
                 display: flex;
+                flex-direction: column;
+                width: 700px;
 
             }
 
             .submit-button {
+                padding-right: 380px;
+                padding-top: 20px;
+
+            }
+
+            .projects {
                 text-align: right;
-                margin-left: 300px;
+            }
+
+            .table {
+                padding-left: 200px;
+                align-content: center;
+            }
+
+            h2 {
+                padding-right: 350px;
             }
 
 
@@ -58,36 +74,42 @@
         </div>
         <hr>
         <div class ='u-info'>
+            <form method="POST" action="/customer/{{cust_name}}">
             <div class='change-u-info'>
 
-                <label for='c-name'>Name}</label>
-                <input type='text' id='c-name' placeholder="{{ c_info.get('name') }}">
-
+                <label for='c-name'>Name</label>
+                <input name='c-name' type='text' id='c-name' placeholder="{{ c_info.get('name') }}">
 
                 <label for='c-address'>Address</label>
-                <input name='u-address' id='c-address' placeholder="{{ c_info.get('cust_address') }}">
+                <input name='c-address' id='c-address' placeholder="{{ c_info.get('cust_address') }}">
 
-                                <label for='c-mail'>e-mail</label>
-                <input type='text' id='u-name' placeholder="{{ c_info.get('cust_email') }}">
+                <label for='c-mail'>e-mail</label>
+                <input name='c-mail' type='text' id='c-mail' placeholder="{{ c_info.get('cust_email') }}">
 
                 <label for='c-phone'>Phone number</label>
-                <input type='text' id='u-surname' placeholder="{{ c_info.get('cust_phone') }}">
-                <table>
+                <input name='c-phone' type='text' id='c-phone' placeholder="{{ c_info.get('cust_phone') }}">
+
+            </div>
+
+            <div class="projects">
+                <h2> Projects </h2>
+                <div class="table">
+                    <table>
                     <tr>
-                        Projects
+
                     </tr>
-                    <td>link1</td>
-                    <tr></tr>
-                    <td>link2</td>
-                    <tr></tr>
-                    <td>link3</td>
-                    <tr></tr>
+                    {% for proj in cust_projects %}
+                        <td> <a href="http://127.0.0.1:8000/project-page/{{cust_projects.get(proj).get('p_id')}}"> {{ cust_projects.get(proj).get('p_name') }} </a> </td>
+                        <tr></tr>
+                    {% endfor %}
 
                 </table>
+                </div>
                 <div class='submit-button'>
                     <button>Edit</button>
                 </div>
             </div>
+            </form>
             </div>
 
     </body>
