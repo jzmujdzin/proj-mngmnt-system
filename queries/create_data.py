@@ -1,9 +1,10 @@
 from typing import Tuple
 
 import pandas as pd
+
+from queries.select_data import get_user_id_for_username
 from tools.db_connection import tx_wrapper
 from tools.table_data import Column
-from queries.select_data import get_user_id_for_username
 
 
 @tx_wrapper
@@ -104,12 +105,16 @@ def create_index(index_name: str, table_name: str, col_list: str):
 
 
 def create_user(u_info: dict):
-    insert_values_q(table_name='users', df=pd.DataFrame(u_info))
-    fill_in_template = {'name': ['please fill in your name!'], 'surname': ['please fill in your surname!'], 'address': ['please fill in your address!'],
-                                                                                                                        'pic_url': ['please fill in your pic url!']}
-    fill_in_role = {'u_id': [get_user_id_for_username(u_info['username'][0])['u_id'][0]], 'role_id': [4]}
-    insert_values_q(table_name='userInfo', df=pd.DataFrame(fill_in_template))
-    insert_values_q(table_name='userRoles', df=pd.DataFrame(fill_in_role))
-
-
-
+    insert_values_q(table_name="users", df=pd.DataFrame(u_info))
+    fill_in_template = {
+        "name": ["please fill in your name!"],
+        "surname": ["please fill in your surname!"],
+        "address": ["please fill in your address!"],
+        "pic_url": ["please fill in your pic url!"],
+    }
+    fill_in_role = {
+        "u_id": [get_user_id_for_username(u_info["username"][0])["u_id"][0]],
+        "role_id": [4],
+    }
+    insert_values_q(table_name="userInfo", df=pd.DataFrame(fill_in_template))
+    insert_values_q(table_name="userRoles", df=pd.DataFrame(fill_in_role))

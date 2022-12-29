@@ -13,41 +13,41 @@ def get_user_name(u_id: int):
 
 @select_wrapper
 def get_user_info(u_id: int):
-    q = f'''
+    q = f"""
         SELECT *
         FROM userInfo
         WHERE u_id = {u_id}
-        '''
+        """
     return q
 
 
 @select_wrapper
 def check_if_user_exists(username: str):
-    q = f'''
+    q = f"""
         SELECT username
         FROM users
         WHERE username = '{username.lower()}'
-        '''
+        """
     return q
 
 
 @select_wrapper
 def get_pwd_for_user_name(username: str):
-    q = f'''
+    q = f"""
         SELECT password
         FROM users
         WHERE username = '{username.lower()}'
-        '''
+        """
     return q
 
 
 @select_wrapper
 def get_user_id_for_username(username: str):
-    q = f'''
+    q = f"""
         SELECT u_id
         FROM users
         WHERE username = '{username.lower()}'
-        '''
+        """
     return q
 
 
@@ -122,18 +122,18 @@ def get_project_info_for_in_depth_project_screen(p_id: int):
 
 @select_wrapper
 def get_users_from_list(u_list: str):
-    usrs = '(' + ','.join(u_list) + ')'
-    q = f'''
+    usrs = "(" + ",".join(u_list) + ")"
+    q = f"""
         SELECT name || ' ' || surname name, pic_URL
         FROM userInfo
         WHERE u_id IN {usrs}
-        '''
+        """
     return q
 
 
 @select_wrapper
 def check_for_project_editing_permissions(u_id: int, p_id: int):
-    q = f'''
+    q = f"""
         WITH user_permission_lvl AS (
         SELECT permission_lvl
         FROM userRoles ur
@@ -147,5 +147,5 @@ def check_for_project_editing_permissions(u_id: int, p_id: int):
         )
         SELECT upl.permission_lvl <= ppl.permission_lvl has_sufficient_perm
         FROM user_permission_lvl upl, project_permission_lvl ppl
-        '''
+        """
     return q

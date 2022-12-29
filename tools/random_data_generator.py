@@ -3,10 +3,10 @@ from typing import List
 
 import pandas as pd
 from loguru import logger
-from queries.create_data import create_table_q, insert_values_q
-
 from random_choice_data import get_random_choice_for_type
 from table_data import Column, Table
+
+from queries.create_data import create_table_q, insert_values_q
 from tools.db_connection import ConnectionClient
 
 
