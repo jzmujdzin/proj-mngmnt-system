@@ -118,3 +118,28 @@ def create_user(u_info: dict):
     }
     insert_values_q(table_name="userInfo", df=pd.DataFrame(fill_in_template))
     insert_values_q(table_name="userRoles", df=pd.DataFrame(fill_in_role))
+
+
+def update_p_info(p_id: int, pname: str, pdesc: str):
+    if pname != "":
+        update_info(
+            table_name="projects",
+            set_what=f"""p_name = '{pname}' """,
+            condition=f"p_id = {p_id}",
+        )
+    if pdesc != "":
+        update_info(
+            table_name="projectInfo",
+            set_what=f""" p_long_description = '{pdesc}' """,
+            condition=f"p_id = {p_id}",
+        )
+
+
+@tx_wrapper
+def update_info(table_name: str, set_what: str, condition: str):
+    q = f"""
+        UPDATE {table_name}
+        SET {set_what}
+        WHERE {condition};
+        """
+    return q

@@ -2,8 +2,8 @@ from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import LoginManager, current_user, login_required, login_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.create_data import create_user
-from queries.select_data import (check_for_project_editing_permissions,
+from queries.create_data import create_user, update_p_info
+from queries.select_data import (check_for_project_viewing_permissions,
                                  check_if_user_exists,
                                  get_project_info_for_in_depth_project_screen,
                                  get_projects_for_projects_screen,
@@ -20,6 +20,13 @@ login_manager = LoginManager(app)
 @login_manager.user_loader
 def load_user(u_id):
     return User(**get_user_info(u_id).to_dict(orient="records")[0])
+
+
+@app.route("/")
+def root():
+    if current_user.is_authenticated:
+        return redirect(url_for("projects"))
+    return redirect(url_for("login"))
 
 
 @app.route("/login")
@@ -68,8 +75,8 @@ def signup_post():
     return redirect(url_for("login"))
 
 
-@login_required
 @app.route("/projects")
+@login_required
 def projects():
     projects_dict = get_projects_for_projects_screen(current_user.u_id).to_dict(
         orient="index"
@@ -79,32 +86,43 @@ def projects():
     )
 
 
-# check if user has permission to view this page. if yes -> render it normally. else -> throw error
-@login_required
 @app.route("/project-page/<int:p_id>")
+@login_required
 def in_depth_project_page(p_id: int):
     p_info = get_project_info_for_in_depth_project_screen(p_id).iloc[0]
     assigned_u = get_users_from_list(p_info["assigned_users"].split(",")).to_dict(
         orient="index"
     )
-    user_edit_perm = check_for_project_editing_permissions(
+    user_view_perm = check_for_project_viewing_permissions(
         current_user.u_id, p_id
     ).iloc[0]["has_sufficient_perm"]
+    user_edit_perm = str(current_user.u_id) in p_info["assigned_users"].split(",")
     return render_template(
         "in-depth-project.html",
+        p_id=p_id,
         p_info=p_info,
         assigned_u=assigned_u,
         user_edit_perm=user_edit_perm,
+        user_view_perm=user_view_perm,
     )
 
 
-# check if user has permission to view this page. if yes -> render it normally. else -> throw error
-# @app.get('/project-page/{p_id}/{u_id}')
-# def in_depth_project_page(request: Request, p_id: int, u_id: int):
-#    p_info = get_project_info_for_in_depth_project_screen(p_id).iloc[0]
-#    assigned_u = get_users_from_list(p_info['assigned_users'].split(',')).to_dict(orient='index')
-#    user_edit_perm = check_for_project_editing_permissions(u_id, p_id).iloc[0]['has_sufficient_perm']
-#    return templates.TemplateResponse('in-depth-project.html', {"request": request, "p_info": p_info, 'assigned_u': assigned_u, 'user_edit_perm': user_edit_perm})
+@app.route("/project-page/<int:p_id>", methods=["POST"])
+def in_depth_project_page_post(p_id: int):
+    new_info = {"pname": request.form.get("pname"), "pdesc": request.form.get("pdesc")}
+    update_p_info(p_id, new_info["pname"], new_info["pdesc"])
+    return redirect(url_for(f"in_depth_project_page", p_id=p_id))
+
+
+@app.route("/user")
+@login_required
+def user():
+    return render_template("user.html", cu=current_user)
+
+
+@app.route("/customer/<string:cust_name>")
+def customer(cust_name: str):
+    return render_template("customer.html")
 
 
 if __name__ == "__main__":

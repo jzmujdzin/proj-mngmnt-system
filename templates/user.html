@@ -86,14 +86,14 @@
             <div class='change-u-info'>
 
                 <label for='u-name'>name</label>
-                <input type='text' id='u-name' placeholder="{{ p_info.get('p_name') }}">
+                <input type='text' id='u-name' placeholder="{{ cu.name }}">
 
                 <label for='u-surname'>surname</label>
-                <input type='text' id='u-surname' placeholder="{{ p_info.get('customer') }}">
+                <input type='text' id='u-surname' placeholder="{{ cu.surname }}">
 
 
                 <label for='u-address'>address</label>
-                <input name='u-address' id='u-address' placeholder="{{ p_info.get('p_long_description') }}">
+                <input name='u-address' id='u-address' placeholder="{{ cu.address }}">
                 <div class='submit-button'>
                     <button>Confirm</button>
                 </div>
@@ -109,14 +109,14 @@
 
 
                 <label for='old-pwd'>old password</label>
-                <input type='text' id='old-pwd' placeholder="{{ p_info.get('p_name') }}">
+                <input type='text' id='old-pwd' placeholder="">
 
                 <label for='new-pwd'>new password</label>
-                <input type='text' id='new-pwd' placeholder="{{ p_info.get('customer') }}">
+                <input type='text' id='new-pwd' placeholder="">
 
 
                 <label for='conf-new-pwd'>address</label>
-                <input type='text' id='conf-new-pwd' placeholder="{{ p_info.get('p_long_description') }}">
+                <input type='text' id='conf-new-pwd' placeholder="">
                 <div class='submit-button'>
                     <button>Confirm</button>
                 </div>

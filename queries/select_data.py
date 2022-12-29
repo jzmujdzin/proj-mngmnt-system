@@ -132,7 +132,7 @@ def get_users_from_list(u_list: str):
 
 
 @select_wrapper
-def check_for_project_editing_permissions(u_id: int, p_id: int):
+def check_for_project_viewing_permissions(u_id: int, p_id: int):
     q = f"""
         WITH user_permission_lvl AS (
         SELECT permission_lvl
@@ -147,5 +147,15 @@ def check_for_project_editing_permissions(u_id: int, p_id: int):
         )
         SELECT upl.permission_lvl <= ppl.permission_lvl has_sufficient_perm
         FROM user_permission_lvl upl, project_permission_lvl ppl
+        """
+    return q
+
+
+@select_wrapper
+def get_p_name(p_id: int):
+    q = f"""
+        SELECT p_name
+        FROM projects p
+        WHERE p_id = {p_id}
         """
     return q

@@ -20,7 +20,6 @@
             .pinfo {
                 display: grid;
                 grid-template-columns: auto 1fr;
-                
                 grid-gap: 1.7em;
                 padding: 1.2em;
                 padding-left: 100px;
@@ -53,27 +52,13 @@
                 padding-left: 420px
             }
 
+            button {
+                padding: 10px;
+                border: none;
+            }
+
         </style>
 
-        {% block head %}
-            {% if user_edit_perm %}
-             <style>
-             button {
-                padding: 10px;
-                border: none;
-            }
-             </style>
-            {% else %}
-             <style>
-             button {
-                background-color: grey;
-                color: grey;
-                padding: 10px;
-                border: none;
-            }
-             </style>
-            {% endif %}
-        {% endblock %}
     </head>
     
     <body>
@@ -83,31 +68,40 @@
             </h2>
         </div>
         <hr>
-        <div class ='pinfo'>
-                <label for='pname'>Project Name</label>
-                <input type='text' id='pname-text' placeholder="{{ p_info.get('p_name') }}">
+        {% if user_view_perm %}
+        <form method="POST" action="/project-page/{{p_id}}">
+            <div class ='pinfo'>
+                    <label for='pname'>Project Name</label>
+                    <input name='pname' type='text' id='pname-text' placeholder="{{ p_info.get('p_name') }}">
 
 
-                <label for='cname'>Customer</label>
-                <input type='text' id='cname-text' placeholder="{{ p_info.get('customer') }}">
+                    <label for='cname'>Customer</label>
+                    <input name='cname' type='text' id='cname-text' placeholder="{{ p_info.get('customer') }}">
 
 
-                <label for='pdesc'>Project description</label>
-                <textarea name='pdesc' id='pdesc-text' maxlength="2001" placeholder="{{ p_info.get('p_long_description') }}"></textarea>
+                    <label for='pdesc'>Project description</label>
+                    <textarea name='pdesc' id='pdesc-text' maxlength="2001" placeholder="{{ p_info.get('p_long_description') }}"></textarea>
 
-            <div class='resp-users'>
-                <table>
-                    <tr>Responsible users:</tr>
-                    {% for user in assigned_u %}
-                    <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
-                    <td> {{ assigned_u.get(user).get('name') }} </td>
-                    <tr></tr>
-                    {% endfor %}
-                </table>
+                <div class='resp-users'>
+                    <table>
+                        <tr>Responsible users:</tr>
+                        {% for user in assigned_u %}
+                        <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
+                        <td> {{ assigned_u.get(user).get('name') }} </td>
+                        <tr></tr>
+                        {% endfor %}
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class='submit-button'>
-            <button>Submit</button>
-        </div>
+            {% if user_edit_perm %}
+                <div class='submit-button'>
+                    <button>Submit</button>
+                </div>
+            {% else %}
+            {% endif %}
+    {% else %}
+        <p>You don't have sufficient permissions to view this project.</p>
+    {% endif %}
+     </form>
     </body>
 </html>
