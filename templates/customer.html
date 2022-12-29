@@ -60,18 +60,18 @@
         <div class ='u-info'>
             <div class='change-u-info'>
 
-                <label for='c-name'>Name</label>
-                <input type='text' id='c-name' placeholder="cust name">
+                <label for='c-name'>Name}</label>
+                <input type='text' id='c-name' placeholder="{{ c_info.get('name') }}">
 
 
                 <label for='c-address'>Address</label>
-                <input name='u-address' id='c-address' placeholder="cust address">
+                <input name='u-address' id='c-address' placeholder="{{ c_info.get('cust_address') }}">
 
                                 <label for='c-mail'>e-mail</label>
-                <input type='text' id='u-name' placeholder="cust mail">
+                <input type='text' id='u-name' placeholder="{{ c_info.get('cust_email') }}">
 
                 <label for='c-phone'>Phone number</label>
-                <input type='text' id='u-surname' placeholder="cust phone">
+                <input type='text' id='u-surname' placeholder="{{ c_info.get('cust_phone') }}">
                 <table>
                     <tr>
                         Projects

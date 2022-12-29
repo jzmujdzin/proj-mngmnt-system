@@ -93,15 +93,16 @@ def get_user_info_for_user_screen(u_id: int):
 
 
 @select_wrapper
-def get_customer_info_for_customer_screen(cust_id: int):
+def get_customer_info_for_customer_screen(cust_name: str):
     q = f"""
         SELECT name,
+               c.cust_id,
                cust_address,
                cust_email,
                cust_phone
         FROM customerInfo ci
         JOIN customers c on c.cust_id = ci.cust_id
-        WHERE c.cust_id = {cust_id};
+        WHERE LOWER(name) = '{cust_name.lower()}';
         """
     return q
 

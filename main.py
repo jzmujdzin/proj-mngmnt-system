@@ -9,7 +9,8 @@ from queries.select_data import (check_for_project_viewing_permissions,
                                  get_projects_for_projects_screen,
                                  get_pwd_for_user_name,
                                  get_user_id_for_username, get_user_info,
-                                 get_user_name, get_users_from_list)
+                                 get_user_name, get_users_from_list,
+                                 get_customer_info_for_customer_screen)
 from tools.models import User
 
 app = Flask(__name__, template_folder="templates")
@@ -122,7 +123,8 @@ def user():
 
 @app.route("/customer/<string:cust_name>")
 def customer(cust_name: str):
-    return render_template("customer.html")
+    c_info = get_customer_info_for_customer_screen(cust_name).iloc[0]
+    return render_template("customer.html", c_info=c_info)
 
 
 if __name__ == "__main__":
