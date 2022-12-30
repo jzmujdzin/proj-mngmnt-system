@@ -97,6 +97,51 @@ def create_email_validation_trigger():
 
 
 @tx_wrapper
+def create_user_insert_trigger():
+    q = '''
+        CREATE TRIGGER log_insertion_on_user_creation
+        AFTER INSERT ON users
+        BEGIN
+            INSERT INTO logs (event_date, event, u_id)
+            VALUES (datetime('now'), 'user creation', NEW.u_id);
+        END ;
+        '''
+    return q
+
+
+@tx_wrapper
+def create_user_pwd_update_trigger():
+    q = '''
+        CREATE TRIGGER log_insertion_on_user_pwd_update
+        BEFORE UPDATE ON users
+        WHEN OLD.password <> NEW.password
+        BEGIN
+            INSERT INTO logs (event_date, event, u_id)
+            VALUES (datetime('now'), 'user password change', OLD.u_id);
+        END ;
+        '''
+    return q
+
+
+@tx_wrapper
+def create_user_info_update_trigger():
+    q = '''
+        CREATE TRIGGER log_insertion_on_user_info_update
+        BEFORE UPDATE ON userInfo
+        BEGIN 
+            INSERT INTO logs (event_date, event, u_id)
+            VALUES (datetime('now'), 'user info has changed: ' ||
+             (CASE WHEN OLD.name <> NEW.name THEN 'user has changed name ' || OLD.name || ' to ' || NEW.name
+             WHEN OLD.surname <> NEW.surname THEN 'user has changed surname ' || OLD.surname || ' to ' || NEW.surname
+             WHEN OLD.address <> NEW.address THEN 'user has changed address ' || OLD.address || ' to ' || NEW.address 
+             WHEN OLD.pic_URL <> NEW.pic_URL THEN 'user has changed pic_URL ' || OLD.pic_URL || ' to ' || NEW.pic_URL ELSE '' END ),
+             OLD.u_id);
+        END ;
+        '''
+    return q
+
+
+@tx_wrapper
 def create_index(index_name: str, table_name: str, col_list: str):
     q = f"""
         CREATE INDEX {index_name}
