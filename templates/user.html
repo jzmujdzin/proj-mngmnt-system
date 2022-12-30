@@ -88,6 +88,11 @@
                 margin-left: 10px;
             }
 
+            .logout-link {
+                padding-left: 300px;
+                padding-top: 100px;
+            }
+
 
         </style>
 
@@ -152,6 +157,8 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-
+        <div class="logout-link">
+            <a href="http://127.0.0.1:8000/logout">logout</a>
+        </div>
     </body>
 </html>

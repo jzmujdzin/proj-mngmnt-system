@@ -1,5 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import LoginManager, current_user, login_required, login_user
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from queries.create_data import create_user, update_p_info, update_c_info, update_u_info, update_password
@@ -9,9 +9,9 @@ from queries.select_data import (check_for_project_viewing_permissions,
                                  get_projects_for_projects_screen,
                                  get_pwd_for_user_name,
                                  get_user_id_for_username, get_user_info,
-                                 get_user_name, get_users_from_list,
+                                  get_users_from_list,
                                  get_customer_info_for_customer_screen,
-                                 get_projects_for_customer)
+                                 get_projects_for_customer, get_plots_for_dashboard)
 from tools.models import User
 
 app = Flask(__name__, template_folder="templates")
@@ -151,6 +151,21 @@ def customer_post(cust_name: str):
                 'c_email': request.form.get('c-mail'), 'c_phone': request.form.get('c-phone'), 'cust_id': get_customer_info_for_customer_screen(cust_name).iloc[0]['cust_id']}
     update_c_info(**new_info)
     return redirect(url_for('customer', cust_name=cust_name))
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('you have successfully logged out')
+    return redirect(url_for('login'))
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    emp_roles_json, proj_cust_json, emp_proj_json = get_plots_for_dashboard()
+    return render_template('dashboard.html', emp_roles_json=emp_roles_json, proj_cust_json=proj_cust_json, emp_proj_json=emp_proj_json)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Project Info </title>
+        <style>
+            body {
+                background-color: grey;
+                margin: 0px;
+            }
+
+            hr {
+                border: 2px solid black;
+            }
+
+            h2 {
+                padding-right: 350px;
+            }
+
+
+            .figure{
+                background-color: gray;
+            }
+
+            .wrapper-two {
+                display: flex;
+                justify-content: space-between;
+                width: 50vw;
+                padding-left: 25%;
+                padding-right: 5%;
+            }
+
+            .tr {
+                padding-top: 5%;
+            }
+
+
+
+
+
+
+        </style>
+
+    </head>
+
+    <body>
+        <div class='in-depth-project'>
+            <h2>
+                Dashboard
+            </h2>
+        </div>
+        <hr>
+
+
+            <div class="wrapper-two">
+                <div id="emp-roles-fig" class="figure"></div>
+                <div id="proj-cust-fig" class="figure"></div>
+            </div>
+
+        <div class="tr">
+            <div id="emp-proj-fig" class="trzy figure"></div>
+        </div>
+
+
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script>
+            var emp_roles = {{ emp_roles_json | safe }};
+            var proj_cust = {{ proj_cust_json | safe }};
+            var emp_proj = {{ emp_proj_json | safe }};
+            Plotly.plot("emp-roles-fig", emp_roles, {})
+            Plotly.plot("proj-cust-fig", proj_cust, {})
+            Plotly.plot("emp-proj-fig", emp_proj, {})
+        </script>
+
+
+
+    </body>
+</html>
