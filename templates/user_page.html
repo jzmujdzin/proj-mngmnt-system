@@ -13,8 +13,8 @@
             }
 
             img {
-                width: 100px;
-                height: 100px;
+                width: 35px;
+                height: 35px;
                 border-radius: 50%;
             }
 
@@ -79,14 +79,8 @@
                 margin-top: 10px;
             }
 
-            .error {
+            .err {
                 color: darkred;
-                margin-left: 10px;
-            }
-
-            .success {
-                color: darkgreen;
-                margin-left: 10px;
             }
 
             .logout-link {
@@ -101,6 +95,12 @@
                 align-items: center;
             }
 
+            .looked-up-user-img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+
         </style>
 
     </head>
@@ -108,7 +108,7 @@
     <body>
         <div class='hello-user'>
             <h2>
-                User Profile
+                User Profile of {{ username }}
             </h2>
             <h2>
                 <a href="http://127.0.0.1:8000/projects">Projects</a>
@@ -116,65 +116,44 @@
             <h2>
                 <a href="http://127.0.0.1:8000/dashboard">Dashboard</a>
             </h2>
+            <div class='user-avatar'>
+                <a href="http://127.0.0.1:8000/user"><img src="{{ pic_link }}"></a>
+            </div>
         </div>
         <hr>
-        <h2 class='u-info-ch'>Change user info</h2>
-        <form method="POST" action="/user">
+        <h2 class='u-info-ch'>User info</h2>
+        <form method="POST" action="/user/{{username}}">
         <div class ='u-info'>
             <div class='change-u-info'>
 
                 <label for='u-name'>name</label>
-                <input name='u-name' type='text' id='u-name' placeholder="{{ cu.name }}">
+                <input name='u-name' type='text' id='u-name' placeholder="{{ ui.get('name') }}">
 
                 <label for='u-surname'>surname</label>
-                <input name='u-surname' type='text' id='u-surname' placeholder="{{ cu.surname }}">
+                <input name='u-surname' type='text' id='u-surname' placeholder="{{ ui.get('surname') }}">
 
+                <label for='role'>Role</label>
+                <input name='role' type='text' id='role' placeholder="{{ ui.get('role') }}">
 
-                <label for='u-address'>address</label>
-                <input name='u-address' id='u-address' placeholder="{{ cu.address }}">
+                {% if edit_permissions %}
                 <div class='submit-button'>
                     <button>Confirm</button>
                 </div>
+                {% endif %}
+
             </div>
             <div class='change-u-info-img'>
-                <img src="{{ cu.pic_URL }}">
-                <input class='change-u-info-input' name='u-pic' id='u-pic' placeholder="{{ cu.pic_URL }}">
-                <button class='button-pic'>Change pic</button>
+                <img class='looked-up-user-img' src="{{ ui.get('pic_URL') }}">
             </div>
          </div>
-        <h2 class='password-head'>Change password</h2>
-
-         <div class ='change-password'>
-
-
-                <label for='old-pwd'>old password</label>
-                <input name='old-pwd' type='password' id='old-pwd' placeholder="">
-
-                <label for='new-pwd'>new password</label>
-                <input name='new-pwd' type='password' id='new-pwd' placeholder="">
-
-
-                <label for='conf-new-pwd'>confirm new password</label>
-                <input name='conf-new-pwd' type='password' id='conf-new-pwd' placeholder="">
-                <div class='submit-button'>
-                    <button>Confirm</button>
-                </div>
-         </div>
         </form>
-        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages() %}
         {% if messages %}
-        {% for category, message in messages %}
-        <div class='{{category}}'>
-            <b> {{ message }} </b>
+        <div class="err">
+            <b> {{ messages[0] }} </b>
         </div>
-        {% endfor %}
         {% endif %}
         {% endwith %}
-        </div>
-        <div class="change-password">
-            <div class="logout-link">
-            <a href="http://127.0.0.1:8000/logout"><button class="log-button">logout</button></a>
-        </div>
         </div>
     </body>
 </html>

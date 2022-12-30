@@ -3,7 +3,7 @@ from typing import Tuple
 import pandas as pd
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.select_data import get_pwd_for_u_id, get_user_id_for_username
+from queries.select_data import get_pwd_for_u_id, get_user_id_for_username, check_if_cust_name_exists
 from tools.db_connection import tx_wrapper
 from tools.table_data import Column
 
@@ -150,6 +150,11 @@ def create_index(index_name: str, table_name: str, col_list: str):
     return q
 
 
+def create_customer(c_name: dict, c_info: dict):
+    insert_values_q(table_name='customers', df=pd.DataFrame(c_name))
+    insert_values_q(table_name='customerInfo', df=pd.DataFrame(c_info))
+
+
 def create_user(u_info: dict):
     insert_values_q(table_name="users", df=pd.DataFrame(u_info))
     fill_in_template = {
@@ -168,6 +173,12 @@ def create_user(u_info: dict):
     insert_values_q(table_name="userRoles", df=pd.DataFrame(fill_in_role))
 
 
+def create_project(p_name: dict, p_info: dict, p_perm: dict):
+    insert_values_q(table_name="projects", df=pd.DataFrame(p_name))
+    insert_values_q(table_name="projectInfo", df=pd.DataFrame(p_info))
+    insert_values_q(table_name="projectPermissions", df=pd.DataFrame(p_perm))
+
+
 def update_p_info(p_id: int, pname: str, pdesc: str):
     if pname != "":
         update_info(
@@ -181,6 +192,10 @@ def update_p_info(p_id: int, pname: str, pdesc: str):
             set_what=f""" p_long_description = '{pdesc}' """,
             condition=f"p_id = {p_id}",
         )
+
+
+def update_user_role(role_id: int, u_id: int):
+    update_info(table_name='userRoles', set_what=f' role_id = {role_id} ', condition=f' u_id = {u_id} ')
 
 
 def update_c_info(

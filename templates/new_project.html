@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Project Info </title>
+        <style>
+            Body {
+                background-color: grey;
+                margin: 0px;
+            }
+
+            hr {
+                border: 2px solid black;
+            }
+
+            img {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+            }
+
+            .pinfo {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-gap: 1.7em;
+                padding: 1.2em;
+                padding-left: 100px;
+                padding-top: 50px;
+            }
+
+            .myForm > input {
+                grid-column: controls;
+                grid-row: auto;
+                border: none;
+                padding: 1em;
+
+            }
+
+            input,
+            textarea{
+                width: 450px;
+                padding: 5px;
+            }
+
+            textarea {
+                height: 100px;
+            }
+
+            .resp-users {
+                padding-top: 120px;
+            }
+
+            .submit-button {
+                margin-left: 380px;
+                margin-top: 20px;
+
+            }
+
+            button {
+                padding: 10px;
+                border: none;
+            }
+
+            .hello-user {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 8px 2px 8px;
+                align-items: center;
+            }
+
+            .err {
+                color: darkred;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+        <div class='hello-user'>
+            <h2>
+                Create new project
+            </h2>
+            <h2>
+                <a href="http://127.0.0.1:8000/projects">Projects</a>
+            </h2>
+            <h2>
+                <a href="http://127.0.0.1:8000/dashboard">Dashboard</a>
+            </h2>
+            <div class='user-avatar'>
+                <a href="http://127.0.0.1:8000/user"><img src="{{ pic_link }}"></a>
+            </div>
+
+        </div>
+        <hr>
+        <form method="POST" action="/new/project">
+            <div class ='pinfo'>
+                    <label for='pname'>Project Name</label>
+                    <input name='pname' type='text' id='pname' placeholder="Project Name">
+
+                    <label for='cname'>Customer</label>
+                    <input name='cname' type='text' id='cname' placeholder="Customer">
+
+                    <label for='pdesc-short'>Short Project description</label>
+                    <textarea name='pdesc-short' id='pdesc-short' maxlength="200" placeholder="Short Project Description"></textarea>
+
+                    <label for='pdesc-long'>Long Project description</label>
+                    <textarea name='pdesc-long' id='pdesc-long' maxlength="2001" placeholder="Long Project Description"></textarea>
+
+                    <label for='perm-lvl'>Permission Level (higher -> viewable by more users)</label>
+                    <input name='perm-lvl' type='text' id='perm-lvl' placeholder="4">
+
+                    <label for='resp-users'>Responsible users (separate by comma)</label>
+                    <input name='resp-users' type='text' id='resp-users' placeholder="1,2,3">
+            </div>
+
+                    <button class="submit-button">Submit</button>
+
+
+     </form>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="err">
+                    <b> {{ messages[0] }} </b>
+                </div>
+                {% endif %}
+                {% endwith %}
+    </body>
+</html>

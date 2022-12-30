@@ -43,6 +43,15 @@
                 border-radius: 50%;
             }
 
+            .new-things {
+                display: flex;
+                justify-content: center;
+            }
+
+            button {
+                margin: 10px;
+            }
+
         </style>
 
     </head>
@@ -71,7 +80,10 @@
             <div id="emp-proj-fig" class="trzy figure"></div>
         </div>
 
-
+        <div class = 'new-things'>
+            <a href="http://127.0.0.1:8000/new/customer"><button>New Customer</button></a>
+            <a href="http://127.0.0.1:8000/new/project"><button>New Project</button></a>
+        </div>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script>
             var emp_roles = {{ emp_roles_json | safe }};

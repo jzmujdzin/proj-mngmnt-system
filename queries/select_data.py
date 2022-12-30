@@ -27,6 +27,19 @@ def get_user_info(u_id: int):
 
 
 @select_wrapper
+def get_user_info_by_username(username: str):
+    q = f'''
+        SELECT ui.u_id, name, surname, address, pic_URL, role
+        FROM userInfo ui
+        JOIN users u ON ui.u_id = u.u_id
+        JOIN userRoles ur ON ur.u_id = u.u_id
+        JOIN roles r ON ur.role_id = r.role_id
+        WHERE LOWER(username) = '{username.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
 def check_if_user_exists(username: str):
     q = f"""
         SELECT username
@@ -250,3 +263,73 @@ def get_plots_for_dashboard():
     proj_cust_json = json.dumps(fig_proj_cust, cls=plotly.utils.PlotlyJSONEncoder)
     emp_proj_json = json.dumps(fig_emp_proj, cls=plotly.utils.PlotlyJSONEncoder)
     return emp_roles_json, proj_cust_json, emp_proj_json
+
+@select_wrapper
+def check_if_cust_name_exists(c_name: str):
+    q = f'''
+        SELECT name
+        FROM customers
+        WHERE LOWER(name) = '{c_name.lower()}';
+        '''
+    return q
+
+
+@select_wrapper
+def check_if_proj_name_exists(p_name: str):
+    q = f'''
+        SELECT p_name
+        FROM projects
+        WHERE LOWER(p_name) = '{p_name.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
+def check_if_role_exists(role_name: str):
+    q = f'''
+        SELECT role_id
+        FROM roles
+        WHERE role = '{role_name}'
+        '''
+    return q
+
+
+@select_wrapper
+def get_cust_id_for_cust_name(cust_name: str):
+    q = f'''
+        SELECT cust_id
+        FROM customers
+        WHERE LOWER(name) = '{cust_name.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
+def get_project_by_name(p_name: str):
+    q = f'''
+        SELECT p_id
+        FROM projects
+        WHERE LOWER(p_name) = '{p_name.lower()}'
+        '''
+    return q
+
+
+@select_wrapper
+def check_user_edit_perm(u_id: int):
+    q = f'''
+        WITH editing_perm_lvl AS (
+            SELECT permission_lvl
+            FROM roles
+            WHERE role = 'CEO'
+        ),
+        user_perm_lvl AS (
+            SELECT permission_lvl
+            FROM userRoles ur
+            JOIN roles r ON ur.role_id = r.role_id
+            WHERE u_id = {u_id}
+            
+        )
+        SELECT epl.permission_lvl >= upl.permission_lvl has_sufficient_perm
+        FROM editing_perm_lvl epl, user_perm_lvl upl
+        '''
+    return q
