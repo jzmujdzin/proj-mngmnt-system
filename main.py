@@ -3,18 +3,24 @@ from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.create_data import (create_user, update_c_info, update_p_info,
-                                 update_password, update_u_info, create_customer, create_project, update_user_role)
+from queries.create_data import (create_customer, create_project, create_user,
+                                 update_c_info, update_p_info, update_password,
+                                 update_u_info, update_user_role)
 from queries.select_data import (check_for_project_viewing_permissions,
-                                 check_if_user_exists,
+                                 check_if_cust_name_exists,
+                                 check_if_proj_name_exists,
+                                 check_if_role_exists, check_if_user_exists,
+                                 check_user_edit_perm,
+                                 get_cust_id_for_cust_name,
                                  get_customer_info_for_customer_screen,
-                                 get_plots_for_dashboard,
+                                 get_plots_for_dashboard, get_project_by_name,
                                  get_project_info_for_in_depth_project_screen,
                                  get_projects_for_customer,
                                  get_projects_for_projects_screen,
                                  get_pwd_for_user_name,
                                  get_user_id_for_username, get_user_info,
-                                 get_users_from_list, check_if_cust_name_exists, check_if_proj_name_exists, get_cust_id_for_cust_name, get_project_by_name, get_user_info_by_username, check_user_edit_perm, check_if_role_exists)
+                                 get_user_info_by_username,
+                                 get_users_from_list)
 from tools.models import User
 
 app = Flask(__name__, template_folder="templates")
@@ -136,19 +142,27 @@ def user():
 @app.route("/user/<string:username>")
 @login_required
 def user_page(username: str):
-    user_info = get_user_info_by_username(username).to_dict(orient='index')[0]
-    edit_permissions = check_user_edit_perm(current_user.u_id).iloc[0]['has_sufficient_perm']
-    return render_template("user_page.html", username=username, ui=user_info, pic_link=current_user.pic_URL, edit_permissions=edit_permissions)
+    user_info = get_user_info_by_username(username).to_dict(orient="index")[0]
+    edit_permissions = check_user_edit_perm(current_user.u_id).iloc[0][
+        "has_sufficient_perm"
+    ]
+    return render_template(
+        "user_page.html",
+        username=username,
+        ui=user_info,
+        pic_link=current_user.pic_URL,
+        edit_permissions=edit_permissions,
+    )
 
 
 @app.route("/user/<string:username>", methods=["POST"])
 def user_page_post(username: str):
-    r_exists = check_if_role_exists(request.form.get('role'))
+    r_exists = check_if_role_exists(request.form.get("role"))
     if r_exists.empty:
-        flash('This role does not exist. Try different role.')
-        return redirect(url_for('user_page', username=username))
-    u_id = get_user_info_by_username(username).to_dict(orient='index')[0]['u_id']
-    update_user_role(r_exists.iloc[0]['role_id'], u_id)
+        flash("This role does not exist. Try different role.")
+        return redirect(url_for("user_page", username=username))
+    u_id = get_user_info_by_username(username).to_dict(orient="index")[0]["u_id"]
+    update_user_role(r_exists.iloc[0]["role_id"], u_id)
     return redirect(url_for("user_page", username=username))
 
 
@@ -228,15 +242,20 @@ def dashboard():
     )
 
 
-@app.route('/new/customer')
+@app.route("/new/customer")
 @login_required
 def new_customer():
-    return render_template('new_customer.html', pic_link=current_user.pic_URL,)
+    return render_template(
+        "new_customer.html",
+        pic_link=current_user.pic_URL,
+    )
 
 
-@app.route('/new/customer', methods=["POST"])
+@app.route("/new/customer", methods=["POST"])
 def new_customer_post():
-    new_c = {"name": [request.form.get("c-name")],}
+    new_c = {
+        "name": [request.form.get("c-name")],
+    }
     new_c_info = {
         "cust_address": [request.form.get("c-address")],
         "cust_email": [request.form.get("c-mail")],
@@ -244,48 +263,58 @@ def new_customer_post():
     }
     for dct in [new_c, new_c_info]:
         for k, v in dct.items():
-            if v[0] == '':
-                flash('Please fill in all fields.')
-                return redirect(url_for('new_customer'))
-    cust_exists = check_if_cust_name_exists(new_c['name'][0])
+            if v[0] == "":
+                flash("Please fill in all fields.")
+                return redirect(url_for("new_customer"))
+    cust_exists = check_if_cust_name_exists(new_c["name"][0])
     if not cust_exists.empty:
-        flash('Customer with this name exists. Try different name')
-        return redirect(url_for('new_customer'))
+        flash("Customer with this name exists. Try different name")
+        return redirect(url_for("new_customer"))
     create_customer(new_c, new_c_info)
-    return redirect(url_for("customer", cust_name=new_c['name'][0].lower()))
+    return redirect(url_for("customer", cust_name=new_c["name"][0].lower()))
 
 
-@app.route('/new/project')
+@app.route("/new/project")
 @login_required
 def new_project():
-    return render_template('new_project.html', pic_link=current_user.pic_URL,)
+    return render_template(
+        "new_project.html",
+        pic_link=current_user.pic_URL,
+    )
 
 
-@app.route('/new/project', methods=["POST"])
+@app.route("/new/project", methods=["POST"])
 def new_project_post():
-    new_p = {"p_name": [request.form.get("pname")], "cust_id": [request.form.get("cname")]}
-    new_p_info = {"p_short_description": [request.form.get("pdesc-short")], "p_long_description": [request.form.get("pdesc-long")], "assigned_users": [request.form.get("resp-users")]}
+    new_p = {
+        "p_name": [request.form.get("pname")],
+        "cust_id": [request.form.get("cname")],
+    }
+    new_p_info = {
+        "p_short_description": [request.form.get("pdesc-short")],
+        "p_long_description": [request.form.get("pdesc-long")],
+        "assigned_users": [request.form.get("resp-users")],
+    }
     for dct in [new_p, new_p_info]:
         for k, v in dct.items():
-            if v[0] == '':
-                flash('Please fill in all fields.')
-                return redirect(url_for('new_project'))
+            if v[0] == "":
+                flash("Please fill in all fields.")
+                return redirect(url_for("new_project"))
     try:
         new_p_perm = {"permission_lvl": [int(request.form.get("perm-lvl"))]}
     except ValueError:
-        flash('Perm lvl should be a number. Try again.')
-        return redirect(url_for('new_project'))
-    p_exists = check_if_proj_name_exists(new_p['p_name'][0])
+        flash("Perm lvl should be a number. Try again.")
+        return redirect(url_for("new_project"))
+    p_exists = check_if_proj_name_exists(new_p["p_name"][0])
     if not p_exists.empty:
-        flash('Project with this name exists. Try different name')
-        return redirect(url_for('new_project'))
-    c_id = get_cust_id_for_cust_name(new_p['cust_id'][0])
+        flash("Project with this name exists. Try different name")
+        return redirect(url_for("new_project"))
+    c_id = get_cust_id_for_cust_name(new_p["cust_id"][0])
     if c_id.empty:
-        flash('Could not find customer with this name. Try again.')
-        return redirect(url_for('new_project'))
-    new_p['cust_id'] = [c_id.iloc[0]['cust_id']]
+        flash("Could not find customer with this name. Try again.")
+        return redirect(url_for("new_project"))
+    new_p["cust_id"] = [c_id.iloc[0]["cust_id"]]
     create_project(new_p, new_p_info, new_p_perm)
-    new_p_id = get_project_by_name(new_p['p_name'][0]).iloc[0]['p_id']
+    new_p_id = get_project_by_name(new_p["p_name"][0]).iloc[0]["p_id"]
     return redirect(url_for("in_depth_project_page", p_id=new_p_id))
 
 

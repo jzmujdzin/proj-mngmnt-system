@@ -3,7 +3,8 @@ from typing import Tuple
 import pandas as pd
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.select_data import get_pwd_for_u_id, get_user_id_for_username, check_if_cust_name_exists
+from queries.select_data import (check_if_cust_name_exists, get_pwd_for_u_id,
+                                 get_user_id_for_username)
 from tools.db_connection import tx_wrapper
 from tools.table_data import Column
 
@@ -151,8 +152,8 @@ def create_index(index_name: str, table_name: str, col_list: str):
 
 
 def create_customer(c_name: dict, c_info: dict):
-    insert_values_q(table_name='customers', df=pd.DataFrame(c_name))
-    insert_values_q(table_name='customerInfo', df=pd.DataFrame(c_info))
+    insert_values_q(table_name="customers", df=pd.DataFrame(c_name))
+    insert_values_q(table_name="customerInfo", df=pd.DataFrame(c_info))
 
 
 def create_user(u_info: dict):
@@ -195,7 +196,11 @@ def update_p_info(p_id: int, pname: str, pdesc: str):
 
 
 def update_user_role(role_id: int, u_id: int):
-    update_info(table_name='userRoles', set_what=f' role_id = {role_id} ', condition=f' u_id = {u_id} ')
+    update_info(
+        table_name="userRoles",
+        set_what=f" role_id = {role_id} ",
+        condition=f" u_id = {u_id} ",
+    )
 
 
 def update_c_info(
