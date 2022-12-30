@@ -15,6 +15,7 @@
             img {
                 width: 100px;
                 height: 100px;
+                border-radius: 50%;
             }
 
             input{
@@ -136,7 +137,7 @@
                 </div>
             </div>
             <div class='change-u-info-img'>
-                <img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'>
+                <img src="{{ cu.pic_URL }}">
                 <input class='change-u-info-input' name='u-pic' id='u-pic' placeholder="{{ cu.pic_URL }}">
                 <button class='button-pic'>Change pic</button>
             </div>

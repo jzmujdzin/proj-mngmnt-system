@@ -1,17 +1,20 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+from flask_login import (LoginManager, current_user, login_required,
+                         login_user, logout_user)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.create_data import create_user, update_p_info, update_c_info, update_u_info, update_password
+from queries.create_data import (create_user, update_c_info, update_p_info,
+                                 update_password, update_u_info)
 from queries.select_data import (check_for_project_viewing_permissions,
                                  check_if_user_exists,
+                                 get_customer_info_for_customer_screen,
+                                 get_plots_for_dashboard,
                                  get_project_info_for_in_depth_project_screen,
+                                 get_projects_for_customer,
                                  get_projects_for_projects_screen,
                                  get_pwd_for_user_name,
                                  get_user_id_for_username, get_user_info,
-                                  get_users_from_list,
-                                 get_customer_info_for_customer_screen,
-                                 get_projects_for_customer, get_plots_for_dashboard)
+                                 get_users_from_list)
 from tools.models import User
 
 app = Flask(__name__, template_folder="templates")
@@ -84,7 +87,10 @@ def projects():
         orient="index"
     )
     return render_template(
-        "projects.html", name=current_user.name, projects_dict=projects_dict
+        "projects.html",
+        name=current_user.name,
+        projects_dict=projects_dict,
+        pic_link=current_user.pic_URL,
     )
 
 
@@ -106,12 +112,17 @@ def in_depth_project_page(p_id: int):
         assigned_u=assigned_u,
         user_edit_perm=user_edit_perm,
         user_view_perm=user_view_perm,
+        pic_link=current_user.pic_URL,
     )
 
 
 @app.route("/project-page/<int:p_id>", methods=["POST"])
 def in_depth_project_page_post(p_id: int):
-    new_info = {'p_id': p_id, "pname": request.form.get("pname"), "pdesc": request.form.get("pdesc")}
+    new_info = {
+        "p_id": p_id,
+        "pname": request.form.get("pname"),
+        "pdesc": request.form.get("pdesc"),
+    }
     update_p_info(**new_info)
     return redirect(url_for("in_depth_project_page", p_id=p_id))
 
@@ -119,53 +130,83 @@ def in_depth_project_page_post(p_id: int):
 @app.route("/user")
 @login_required
 def user():
-    return render_template("user.html", cu=current_user)
+    return render_template("user.html", cu=current_user, pic_link=current_user.pic_URL)
 
 
-@app.route('/user', methods=["POST"])
+@app.route("/user", methods=["POST"])
 def user_post():
-    new_info = {'name': request.form.get('u-name'), 'surname': request.form.get('u-surname'), 'address': request.form.get('u-address'),
-                'pic_URL': request.form.get('u-pic'), 'u_id': current_user.u_id}
-    pwd_info = {'old_pwd': request.form.get('old-pwd'), 'new_pwd': request.form.get('new-pwd'), 'conf_new_pwd': request.form.get('conf-new-pwd'), 'u_id': current_user.u_id}
+    new_info = {
+        "name": request.form.get("u-name"),
+        "surname": request.form.get("u-surname"),
+        "address": request.form.get("u-address"),
+        "pic_URL": request.form.get("u-pic"),
+        "u_id": current_user.u_id,
+    }
+    pwd_info = {
+        "old_pwd": request.form.get("old-pwd"),
+        "new_pwd": request.form.get("new-pwd"),
+        "conf_new_pwd": request.form.get("conf-new-pwd"),
+        "u_id": current_user.u_id,
+    }
     if update_u_info(**new_info):
-        flash('Updated user information', 'success')
+        flash("Updated user information", "success")
     update_pwd_info = update_password(**pwd_info)
     if update_pwd_info:
-        flash("Password changed succesfully.", 'success')
+        flash("Password changed succesfully.", "success")
     elif update_pwd_info is False:
-        flash("Wrong old password or new password and password confirmation did not match. Try again.", 'error')
-    return redirect(url_for('user'))
+        flash(
+            "Wrong old password or new password and password confirmation did not match. Try again.",
+            "error",
+        )
+    return redirect(url_for("user"))
 
 
 @app.route("/customer/<string:cust_name>")
 @login_required
 def customer(cust_name: str):
     c_info = get_customer_info_for_customer_screen(cust_name).iloc[0]
-    cust_projects = get_projects_for_customer(c_info['cust_id']).to_dict(orient='index')
-    return render_template("customer.html", c_info=c_info, cust_projects=cust_projects, cust_name=cust_name)
+    cust_projects = get_projects_for_customer(c_info["cust_id"]).to_dict(orient="index")
+    return render_template(
+        "customer.html",
+        c_info=c_info,
+        cust_projects=cust_projects,
+        cust_name=cust_name,
+        pic_link=current_user.pic_URL,
+    )
 
 
-@app.route('/customer/<string:cust_name>', methods=["POST"])
+@app.route("/customer/<string:cust_name>", methods=["POST"])
 def customer_post(cust_name: str):
-    new_info = {'c_name': request.form.get('c-name'), 'c_address': request.form.get('c-address'),
-                'c_email': request.form.get('c-mail'), 'c_phone': request.form.get('c-phone'), 'cust_id': get_customer_info_for_customer_screen(cust_name).iloc[0]['cust_id']}
+    new_info = {
+        "c_name": request.form.get("c-name"),
+        "c_address": request.form.get("c-address"),
+        "c_email": request.form.get("c-mail"),
+        "c_phone": request.form.get("c-phone"),
+        "cust_id": get_customer_info_for_customer_screen(cust_name).iloc[0]["cust_id"],
+    }
     update_c_info(**new_info)
-    return redirect(url_for('customer', cust_name=cust_name))
+    return redirect(url_for("customer", cust_name=cust_name))
 
 
-@app.route('/logout')
+@app.route("/logout")
 @login_required
 def logout():
     logout_user()
-    flash('you have successfully logged out')
-    return redirect(url_for('login'))
+    flash("you have successfully logged out")
+    return redirect(url_for("login"))
 
 
-@app.route('/dashboard')
+@app.route("/dashboard")
 @login_required
 def dashboard():
     emp_roles_json, proj_cust_json, emp_proj_json = get_plots_for_dashboard()
-    return render_template('dashboard.html', emp_roles_json=emp_roles_json, proj_cust_json=proj_cust_json, emp_proj_json=emp_proj_json)
+    return render_template(
+        "dashboard.html",
+        emp_roles_json=emp_roles_json,
+        proj_cust_json=proj_cust_json,
+        emp_proj_json=emp_proj_json,
+        pic_link=current_user.pic_URL,
+    )
 
 
 if __name__ == "__main__":

@@ -15,6 +15,7 @@
             img {
                 width: 35px;
                 height: 35px;
+                border-radius: 50%;
             }
             
             .pinfo {
@@ -80,7 +81,7 @@
                 <a href="http://127.0.0.1:8000/dashboard">Dashboard</a>
             </h2>
             <div class='user-avatar'>
-                <a href="http://127.0.0.1:8000/user"><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></a>
+                <a href="http://127.0.0.1:8000/user"><img src="{{ pic_link }}"></a>
             </div>
 
         </div>
@@ -103,7 +104,7 @@
                     <table>
                         <tr>Responsible users:</tr>
                         {% for user in assigned_u %}
-                        <td><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></td>
+                        <td><img src="{{ assigned_u.get(user).get('pic_URL') }}"></td>
                         <td> {{ assigned_u.get(user).get('name') }} </td>
                         <tr></tr>
                         {% endfor %}

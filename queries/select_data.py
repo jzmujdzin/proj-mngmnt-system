@@ -1,7 +1,9 @@
-from tools.db_connection import select_wrapper
 import json
+
 import plotly
 import plotly.express as px
+
+from tools.db_connection import select_wrapper
 
 
 @select_wrapper
@@ -46,11 +48,11 @@ def get_pwd_for_user_name(username: str):
 
 @select_wrapper
 def get_pwd_for_u_id(u_id: int):
-    q = f'''
+    q = f"""
         SELECT password
         FROM users
         WHERE u_id = {u_id};
-        '''
+        """
     return q
 
 
@@ -177,51 +179,51 @@ def get_p_name(p_id: int):
 
 @select_wrapper
 def get_projects_for_customer(cust_id: int):
-    q = f'''
+    q = f"""
         SELECT p_name, 
                p_id
         FROM projects
         WHERE cust_id = {cust_id};
-        '''
+        """
     return q
 
 
 @select_wrapper
 def get_roles_counts():
-    q = '''
+    q = """
         SELECT role, COUNT(*) number
         FROM userRoles ur
         JOIN roles r ON ur.role_id = r.role_id
         GROUP BY role
         ORDER BY number;
-        '''
+        """
     return q
 
 
 @select_wrapper
 def get_customer_project_counts():
-    q = '''
+    q = """
         SELECT name, COUNT(p_name) number
         FROM projects p
         JOIN customers c ON p.cust_id = c.cust_id
         GROUP BY name;
-        '''
+        """
     return q
 
 
 @select_wrapper
 def get_projects_assigned_users():
-    q = '''
+    q = """
         SELECT p_name, assigned_users
         FROM projectInfo pi
         JOIN projects p on pi.p_id = p.p_id;
-        '''
+        """
     return q
 
 
 def get_projects_and_users_num():
     df = get_projects_assigned_users()
-    df['users_num'] = df['assigned_users'].apply(lambda x: len(x.split(',')))
+    df["users_num"] = df["assigned_users"].apply(lambda x: len(x.split(",")))
     return df
 
 
@@ -229,16 +231,20 @@ def get_plots_for_dashboard():
     employee_roles = get_roles_counts()
     projects_customers = get_customer_project_counts()
     employee_projects = get_projects_and_users_num()
-    fig_emp_roles = px.bar(employee_roles, x='role', y='number')
-    fig_proj_cust = px.bar(projects_customers, x='name', y='number')
-    fig_emp_proj = px.bar(employee_projects, x='p_name', y='users_num')
-    plot_layout_dict = {'plot_bgcolor': '#808080', 'paper_bgcolor': '#808080', 'title_x': 0.5,
-                        'font': {'family': 'Arial Black', 'color': 'black'}}
-    fig_emp_roles.update_layout(title='<b>Roles by employee count</b>')
+    fig_emp_roles = px.bar(employee_roles, x="role", y="number")
+    fig_proj_cust = px.bar(projects_customers, x="name", y="number")
+    fig_emp_proj = px.bar(employee_projects, x="p_name", y="users_num")
+    plot_layout_dict = {
+        "plot_bgcolor": "#808080",
+        "paper_bgcolor": "#808080",
+        "title_x": 0.5,
+        "font": {"family": "Arial Black", "color": "black"},
+    }
+    fig_emp_roles.update_layout(title="<b>Roles by employee count</b>")
     fig_emp_roles.update_layout(plot_layout_dict)
-    fig_proj_cust.update_layout(title='<b>Projects for each customer</b>')
+    fig_proj_cust.update_layout(title="<b>Projects for each customer</b>")
     fig_proj_cust.update_layout(plot_layout_dict)
-    fig_emp_proj.update_layout(title='<b>Users assigned for each project</b>')
+    fig_emp_proj.update_layout(title="<b>Users assigned for each project</b>")
     fig_emp_proj.update_layout(plot_layout_dict)
     emp_roles_json = json.dumps(fig_emp_roles, cls=plotly.utils.PlotlyJSONEncoder)
     proj_cust_json = json.dumps(fig_proj_cust, cls=plotly.utils.PlotlyJSONEncoder)

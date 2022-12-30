@@ -1,11 +1,11 @@
 from typing import Tuple
 
 import pandas as pd
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.select_data import get_user_id_for_username, get_pwd_for_u_id
+from queries.select_data import get_pwd_for_u_id, get_user_id_for_username
 from tools.db_connection import tx_wrapper
 from tools.table_data import Column
-from werkzeug.security import check_password_hash, generate_password_hash
 
 
 @tx_wrapper
@@ -98,20 +98,20 @@ def create_email_validation_trigger():
 
 @tx_wrapper
 def create_user_insert_trigger():
-    q = '''
+    q = """
         CREATE TRIGGER log_insertion_on_user_creation
         AFTER INSERT ON users
         BEGIN
             INSERT INTO logs (event_date, event, u_id)
             VALUES (datetime('now'), 'user creation', NEW.u_id);
         END ;
-        '''
+        """
     return q
 
 
 @tx_wrapper
 def create_user_pwd_update_trigger():
-    q = '''
+    q = """
         CREATE TRIGGER log_insertion_on_user_pwd_update
         BEFORE UPDATE ON users
         WHEN OLD.password <> NEW.password
@@ -119,13 +119,13 @@ def create_user_pwd_update_trigger():
             INSERT INTO logs (event_date, event, u_id)
             VALUES (datetime('now'), 'user password change', OLD.u_id);
         END ;
-        '''
+        """
     return q
 
 
 @tx_wrapper
 def create_user_info_update_trigger():
-    q = '''
+    q = """
         CREATE TRIGGER log_insertion_on_user_info_update
         BEFORE UPDATE ON userInfo
         BEGIN 
@@ -137,7 +137,7 @@ def create_user_info_update_trigger():
              WHEN OLD.pic_URL <> NEW.pic_URL THEN 'user has changed pic_URL ' || OLD.pic_URL || ' to ' || NEW.pic_URL ELSE '' END ),
              OLD.u_id);
         END ;
-        '''
+        """
     return q
 
 
@@ -156,7 +156,9 @@ def create_user(u_info: dict):
         "name": ["please fill in your name!"],
         "surname": ["please fill in your surname!"],
         "address": ["please fill in your address!"],
-        "pic_url": ["please fill in your pic url!"],
+        "pic_url": [
+            "https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png"
+        ],
     }
     fill_in_role = {
         "u_id": [get_user_id_for_username(u_info["username"][0])["u_id"][0]],
@@ -181,41 +183,77 @@ def update_p_info(p_id: int, pname: str, pdesc: str):
         )
 
 
-def update_c_info(c_name: str, c_address: str, c_email: str, c_phone: str, cust_id: int):
-    if c_name != '':
-        update_info(table_name='customers', set_what=f'''name = '{c_name}' ''', condition=f''' cust_id = {cust_id} ''')
-    if c_address != '':
-        update_info(table_name='customerInfo', set_what=f'''cust_address = '{c_address}' ''', condition=f''' cust_id = {cust_id} ''')
-    if c_email != '':
-        update_info(table_name='customerInfo', set_what=f'''cust_email = '{c_email}' ''', condition=f''' cust_id = {cust_id} ''')
-    if c_phone != '':
-        update_info(table_name='customerInfo', set_what=f'''cust_phone = '{c_phone}' ''', condition=f''' cust_id = {cust_id} ''')
+def update_c_info(
+    c_name: str, c_address: str, c_email: str, c_phone: str, cust_id: int
+):
+    if c_name != "":
+        update_info(
+            table_name="customers",
+            set_what=f"""name = '{c_name}' """,
+            condition=f""" cust_id = {cust_id} """,
+        )
+    if c_address != "":
+        update_info(
+            table_name="customerInfo",
+            set_what=f"""cust_address = '{c_address}' """,
+            condition=f""" cust_id = {cust_id} """,
+        )
+    if c_email != "":
+        update_info(
+            table_name="customerInfo",
+            set_what=f"""cust_email = '{c_email}' """,
+            condition=f""" cust_id = {cust_id} """,
+        )
+    if c_phone != "":
+        update_info(
+            table_name="customerInfo",
+            set_what=f"""cust_phone = '{c_phone}' """,
+            condition=f""" cust_id = {cust_id} """,
+        )
 
 
 def update_u_info(name: str, surname: str, address: str, pic_URL: str, u_id: int):
-    if name == '' and surname == '' and address == '' and pic_URL == '':
+    if name == "" and surname == "" and address == "" and pic_URL == "":
         return None
-    if name != '':
-        update_info(table_name='userInfo', set_what=f'''name = '{name}' ''', condition=f'''u_id = {u_id} ''')
-    if surname != '':
-        update_info(table_name='userInfo', set_what=f'''surname = '{surname}' ''', condition=f'''u_id = {u_id} ''')
-    if address != '':
-        update_info(table_name='userInfo', set_what=f'''address = '{address}' ''', condition=f'''u_id = {u_id} ''')
-    if pic_URL != '':
-        update_info(table_name='userInfo', set_what=f'''pic_URL = '{pic_URL}' ''', condition=f'''u_id = {u_id} ''')
+    if name != "":
+        update_info(
+            table_name="userInfo",
+            set_what=f"""name = '{name}' """,
+            condition=f"""u_id = {u_id} """,
+        )
+    if surname != "":
+        update_info(
+            table_name="userInfo",
+            set_what=f"""surname = '{surname}' """,
+            condition=f"""u_id = {u_id} """,
+        )
+    if address != "":
+        update_info(
+            table_name="userInfo",
+            set_what=f"""address = '{address}' """,
+            condition=f"""u_id = {u_id} """,
+        )
+    if pic_URL != "":
+        update_info(
+            table_name="userInfo",
+            set_what=f"""pic_URL = '{pic_URL}' """,
+            condition=f"""u_id = {u_id} """,
+        )
     return True
 
 
 def update_password(old_pwd: str, new_pwd: str, conf_new_pwd: str, u_id: int):
-    if old_pwd == '' and new_pwd == '' and conf_new_pwd == '':
+    if old_pwd == "" and new_pwd == "" and conf_new_pwd == "":
         return None
     if new_pwd != conf_new_pwd:
         return False
-    if not check_password_hash(
-        get_pwd_for_u_id(u_id)["password"][0], old_pwd
-    ):
+    if not check_password_hash(get_pwd_for_u_id(u_id)["password"][0], old_pwd):
         return False
-    update_info(table_name='users', set_what=f'''password = '{generate_password_hash(new_pwd)}' ''', condition=f'''u_id = {u_id} ''')
+    update_info(
+        table_name="users",
+        set_what=f"""password = '{generate_password_hash(new_pwd)}' """,
+        condition=f"""u_id = {u_id} """,
+    )
     return True
 
 
