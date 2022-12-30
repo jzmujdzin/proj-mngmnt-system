@@ -93,15 +93,27 @@
                 padding-top: 100px;
             }
 
+            .hello-user {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 8px 2px 8px;
+                align-items: center;
+            }
 
         </style>
 
     </head>
 
     <body>
-        <div class='in-depth-project'>
+        <div class='hello-user'>
             <h2>
                 User Profile
+            </h2>
+            <h2>
+                <a href="http://127.0.0.1:8000/projects">Projects</a>
+            </h2>
+            <h2>
+                <a href="http://127.0.0.1:8000/dashboard">Dashboard</a>
             </h2>
         </div>
         <hr>
@@ -157,8 +169,10 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <div class="logout-link">
-            <a href="http://127.0.0.1:8000/logout">logout</a>
+        </div>
+        <div class="change-password">
+            <div class="logout-link">
+            <a href="http://127.0.0.1:8000/logout"><button class="log-button">logout</button></a>
         </div>
     </body>
 </html>

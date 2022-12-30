@@ -57,15 +57,32 @@
                 border: none;
             }
 
+            .hello-user {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 8px 2px 8px;
+                align-items: center;
+            }
+
         </style>
 
     </head>
     
     <body>
-        <div class='in-depth-project'>
+        <div class='hello-user'>
             <h2>
                 In-depth information for {{ p_info.get('p_name') }}
             </h2>
+            <h2>
+                <a href="http://127.0.0.1:8000/projects">Projects</a>
+            </h2>
+            <h2>
+                <a href="http://127.0.0.1:8000/dashboard">Dashboard</a>
+            </h2>
+            <div class='user-avatar'>
+                <a href="http://127.0.0.1:8000/user"><img src='https://www.seekpng.com/png/full/73-730482_existing-user-default-avatar.png'></a>
+            </div>
+
         </div>
         <hr>
         {% if user_view_perm %}
