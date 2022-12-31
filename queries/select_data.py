@@ -153,9 +153,10 @@ def get_project_info_for_in_depth_project_screen(p_id: int):
 def get_users_from_list(u_list: str):
     usrs = "(" + ",".join(u_list) + ")"
     q = f"""
-        SELECT name || ' ' || surname name, pic_URL
-        FROM userInfo
-        WHERE u_id IN {usrs};
+        SELECT name || ' ' || surname name, pic_URL, username
+        FROM userInfo ui
+        JOIN users u ON ui.u_id = u.u_id
+        WHERE ui.u_id IN {usrs};
         """
     return q
 
