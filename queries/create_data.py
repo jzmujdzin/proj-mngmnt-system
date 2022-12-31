@@ -1,10 +1,9 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import pandas as pd
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from queries.select_data import (check_if_cust_name_exists, get_pwd_for_u_id,
-                                 get_user_id_for_username)
+from queries.select_data import get_pwd_for_u_id, get_user_id_for_username
 from tools.db_connection import tx_wrapper
 from tools.table_data import Column
 
@@ -82,7 +81,7 @@ def insert_values_q(table_name: str, df: pd.DataFrame) -> str:
 
 
 @tx_wrapper
-def create_email_validation_trigger():
+def create_email_validation_trigger() -> str:
     q = """
         CREATE TRIGGER validate_email_on_customerinfo_insertion
         BEFORE INSERT ON customerInfo
@@ -98,7 +97,7 @@ def create_email_validation_trigger():
 
 
 @tx_wrapper
-def create_user_insert_trigger():
+def create_user_insert_trigger() -> str:
     q = """
         CREATE TRIGGER log_insertion_on_user_creation
         AFTER INSERT ON users
@@ -111,7 +110,7 @@ def create_user_insert_trigger():
 
 
 @tx_wrapper
-def create_user_pwd_update_trigger():
+def create_user_pwd_update_trigger() -> str:
     q = """
         CREATE TRIGGER log_insertion_on_user_pwd_update
         BEFORE UPDATE ON users
@@ -125,7 +124,7 @@ def create_user_pwd_update_trigger():
 
 
 @tx_wrapper
-def create_user_info_update_trigger():
+def create_user_info_update_trigger() -> str:
     q = """
         CREATE TRIGGER log_insertion_on_user_info_update
         BEFORE UPDATE ON userInfo
@@ -143,7 +142,7 @@ def create_user_info_update_trigger():
 
 
 @tx_wrapper
-def create_index(index_name: str, table_name: str, col_list: str):
+def create_index(index_name: str, table_name: str, col_list: str) -> str:
     q = f"""
         CREATE INDEX {index_name}
         ON {table_name} ({col_list}); 
@@ -151,12 +150,12 @@ def create_index(index_name: str, table_name: str, col_list: str):
     return q
 
 
-def create_customer(c_name: dict, c_info: dict):
+def create_customer(c_name: dict, c_info: dict) -> None:
     insert_values_q(table_name="customers", df=pd.DataFrame(c_name))
     insert_values_q(table_name="customerInfo", df=pd.DataFrame(c_info))
 
 
-def create_user(u_info: dict):
+def create_user(u_info: dict) -> None:
     insert_values_q(table_name="users", df=pd.DataFrame(u_info))
     fill_in_template = {
         "name": ["please fill in your name!"],
@@ -174,13 +173,13 @@ def create_user(u_info: dict):
     insert_values_q(table_name="userRoles", df=pd.DataFrame(fill_in_role))
 
 
-def create_project(p_name: dict, p_info: dict, p_perm: dict):
+def create_project(p_name: dict, p_info: dict, p_perm: dict) -> None:
     insert_values_q(table_name="projects", df=pd.DataFrame(p_name))
     insert_values_q(table_name="projectInfo", df=pd.DataFrame(p_info))
     insert_values_q(table_name="projectPermissions", df=pd.DataFrame(p_perm))
 
 
-def update_p_info(p_id: int, pname: str, pdesc: str):
+def update_p_info(p_id: int, pname: str, pdesc: str) -> None:
     if pname != "":
         update_info(
             table_name="projects",
@@ -195,7 +194,7 @@ def update_p_info(p_id: int, pname: str, pdesc: str):
         )
 
 
-def update_user_role(role_id: int, u_id: int):
+def update_user_role(role_id: int, u_id: int) -> None:
     update_info(
         table_name="userRoles",
         set_what=f" role_id = {role_id} ",
@@ -205,7 +204,7 @@ def update_user_role(role_id: int, u_id: int):
 
 def update_c_info(
     c_name: str, c_address: str, c_email: str, c_phone: str, cust_id: int
-):
+) -> None:
     if c_name != "":
         update_info(
             table_name="customers",
@@ -232,7 +231,9 @@ def update_c_info(
         )
 
 
-def update_u_info(name: str, surname: str, address: str, pic_URL: str, u_id: int):
+def update_u_info(
+    name: str, surname: str, address: str, pic_URL: str, u_id: int
+) -> Optional[bool]:
     if name == "" and surname == "" and address == "" and pic_URL == "":
         return None
     if name != "":
@@ -262,7 +263,9 @@ def update_u_info(name: str, surname: str, address: str, pic_URL: str, u_id: int
     return True
 
 
-def update_password(old_pwd: str, new_pwd: str, conf_new_pwd: str, u_id: int):
+def update_password(
+    old_pwd: str, new_pwd: str, conf_new_pwd: str, u_id: int
+) -> Optional[bool]:
     if old_pwd == "" and new_pwd == "" and conf_new_pwd == "":
         return None
     if new_pwd != conf_new_pwd:
@@ -278,7 +281,7 @@ def update_password(old_pwd: str, new_pwd: str, conf_new_pwd: str, u_id: int):
 
 
 @tx_wrapper
-def update_info(table_name: str, set_what: str, condition: str):
+def update_info(table_name: str, set_what: str, condition: str) -> str:
     q = f"""
         UPDATE {table_name}
         SET {set_what}

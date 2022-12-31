@@ -1,5 +1,7 @@
 import json
+from typing import Tuple
 
+import pandas as pd
 import plotly
 import plotly.express as px
 
@@ -7,7 +9,7 @@ from tools.db_connection import select_wrapper
 
 
 @select_wrapper
-def get_user_name(u_id: int):
+def get_user_name(u_id: int) -> str:
     q = f"""
         SELECT name
         FROM userInfo
@@ -17,7 +19,7 @@ def get_user_name(u_id: int):
 
 
 @select_wrapper
-def get_user_info(u_id: int):
+def get_user_info(u_id: int) -> str:
     q = f"""
         SELECT *
         FROM userInfo
@@ -27,7 +29,7 @@ def get_user_info(u_id: int):
 
 
 @select_wrapper
-def get_user_info_by_username(username: str):
+def get_user_info_by_username(username: str) -> str:
     q = f"""
         SELECT ui.u_id, name, surname, address, pic_URL, role
         FROM userInfo ui
@@ -40,7 +42,7 @@ def get_user_info_by_username(username: str):
 
 
 @select_wrapper
-def check_if_user_exists(username: str):
+def check_if_user_exists(username: str) -> str:
     q = f"""
         SELECT username
         FROM users
@@ -50,7 +52,7 @@ def check_if_user_exists(username: str):
 
 
 @select_wrapper
-def get_pwd_for_user_name(username: str):
+def get_pwd_for_user_name(username: str) -> str:
     q = f"""
         SELECT password
         FROM users
@@ -60,7 +62,7 @@ def get_pwd_for_user_name(username: str):
 
 
 @select_wrapper
-def get_pwd_for_u_id(u_id: int):
+def get_pwd_for_u_id(u_id: int) -> str:
     q = f"""
         SELECT password
         FROM users
@@ -70,7 +72,7 @@ def get_pwd_for_u_id(u_id: int):
 
 
 @select_wrapper
-def get_user_id_for_username(username: str):
+def get_user_id_for_username(username: str) -> str:
     q = f"""
         SELECT u_id
         FROM users
@@ -80,7 +82,7 @@ def get_user_id_for_username(username: str):
 
 
 @select_wrapper
-def get_projects_for_projects_screen(u_id: int):
+def get_projects_for_projects_screen(u_id: int) -> str:
     q = f"""
         SELECT p_name, 
                p_short_description,
@@ -108,7 +110,7 @@ def get_projects_for_projects_screen(u_id: int):
 
 
 @select_wrapper
-def get_user_info_for_user_screen(u_id: int):
+def get_user_info_for_user_screen(u_id: int) -> str:
     q = f"""
         SELECT name,
                surname,
@@ -121,7 +123,7 @@ def get_user_info_for_user_screen(u_id: int):
 
 
 @select_wrapper
-def get_customer_info_for_customer_screen(cust_name: str):
+def get_customer_info_for_customer_screen(cust_name: str) -> str:
     q = f"""
         SELECT name,
                c.cust_id,
@@ -136,7 +138,7 @@ def get_customer_info_for_customer_screen(cust_name: str):
 
 
 @select_wrapper
-def get_project_info_for_in_depth_project_screen(p_id: int):
+def get_project_info_for_in_depth_project_screen(p_id: int) -> str:
     q = f"""
         SELECT p_name,
         (SELECT name FROM customers WHERE cust_id = (SELECT cust_id FROM projects WHERE p_id = {p_id})) customer,
@@ -150,7 +152,7 @@ def get_project_info_for_in_depth_project_screen(p_id: int):
 
 
 @select_wrapper
-def get_users_from_list(u_list: str):
+def get_users_from_list(u_list: str) -> str:
     usrs = "(" + ",".join(u_list) + ")"
     q = f"""
         SELECT name || ' ' || surname name, pic_URL, username
@@ -162,7 +164,7 @@ def get_users_from_list(u_list: str):
 
 
 @select_wrapper
-def check_for_project_viewing_permissions(u_id: int, p_id: int):
+def check_for_project_viewing_permissions(u_id: int, p_id: int) -> str:
     q = f"""
         WITH user_permission_lvl AS (
         SELECT permission_lvl
@@ -182,7 +184,7 @@ def check_for_project_viewing_permissions(u_id: int, p_id: int):
 
 
 @select_wrapper
-def get_p_name(p_id: int):
+def get_p_name(p_id: int) -> str:
     q = f"""
         SELECT p_name
         FROM projects p
@@ -192,7 +194,7 @@ def get_p_name(p_id: int):
 
 
 @select_wrapper
-def get_projects_for_customer(cust_id: int):
+def get_projects_for_customer(cust_id: int) -> str:
     q = f"""
         SELECT p_name, 
                p_id
@@ -203,7 +205,7 @@ def get_projects_for_customer(cust_id: int):
 
 
 @select_wrapper
-def get_roles_counts():
+def get_roles_counts() -> str:
     q = """
         SELECT role, COUNT(*) number
         FROM userRoles ur
@@ -215,7 +217,7 @@ def get_roles_counts():
 
 
 @select_wrapper
-def get_customer_project_counts():
+def get_customer_project_counts() -> str:
     q = """
         SELECT name, COUNT(p_name) number
         FROM projects p
@@ -226,7 +228,7 @@ def get_customer_project_counts():
 
 
 @select_wrapper
-def get_projects_assigned_users():
+def get_projects_assigned_users() -> str:
     q = """
         SELECT p_name, assigned_users
         FROM projectInfo pi
@@ -235,13 +237,13 @@ def get_projects_assigned_users():
     return q
 
 
-def get_projects_and_users_num():
+def get_projects_and_users_num() -> pd.DataFrame:
     df = get_projects_assigned_users()
     df["users_num"] = df["assigned_users"].apply(lambda x: len(x.split(",")))
     return df
 
 
-def get_plots_for_dashboard():
+def get_plots_for_dashboard() -> Tuple[str, str, str]:
     employee_roles = get_roles_counts()
     projects_customers = get_customer_project_counts()
     employee_projects = get_projects_and_users_num()
@@ -267,7 +269,7 @@ def get_plots_for_dashboard():
 
 
 @select_wrapper
-def check_if_cust_name_exists(c_name: str):
+def check_if_cust_name_exists(c_name: str) -> str:
     q = f"""
         SELECT name
         FROM customers
@@ -277,7 +279,7 @@ def check_if_cust_name_exists(c_name: str):
 
 
 @select_wrapper
-def check_if_proj_name_exists(p_name: str):
+def check_if_proj_name_exists(p_name: str) -> str:
     q = f"""
         SELECT p_name
         FROM projects
@@ -287,7 +289,7 @@ def check_if_proj_name_exists(p_name: str):
 
 
 @select_wrapper
-def check_if_role_exists(role_name: str):
+def check_if_role_exists(role_name: str) -> str:
     q = f"""
         SELECT role_id
         FROM roles
@@ -297,7 +299,7 @@ def check_if_role_exists(role_name: str):
 
 
 @select_wrapper
-def get_cust_id_for_cust_name(cust_name: str):
+def get_cust_id_for_cust_name(cust_name: str) -> str:
     q = f"""
         SELECT cust_id
         FROM customers
@@ -307,7 +309,7 @@ def get_cust_id_for_cust_name(cust_name: str):
 
 
 @select_wrapper
-def get_project_by_name(p_name: str):
+def get_project_by_name(p_name: str) -> str:
     q = f"""
         SELECT p_id
         FROM projects
@@ -317,7 +319,7 @@ def get_project_by_name(p_name: str):
 
 
 @select_wrapper
-def check_user_edit_perm(u_id: int):
+def check_user_edit_perm(u_id: int) -> str:
     q = f"""
         WITH editing_perm_lvl AS (
             SELECT permission_lvl

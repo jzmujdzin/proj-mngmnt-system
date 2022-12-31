@@ -1,7 +1,8 @@
 import random
+from typing import Union
 
 
-def get_random_choice_for_type(dtype: str):
+def get_random_choice_for_type(dtype: str) -> Union[int, str]:
     if dtype == "INTEGER":
         return random.choice(range(0, 100))
     elif "VARCHAR" in dtype:

@@ -12,4 +12,4 @@ class Column:
 class Table:
     table_name: str
     rows: int
-    column_info: Tuple[Column]
+    column_info: Tuple[Column, ...]

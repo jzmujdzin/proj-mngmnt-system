@@ -1,4 +1,5 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import (Flask, Response, flash, redirect, render_template, request,
+                   url_for)
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -29,24 +30,24 @@ login_manager = LoginManager(app)
 
 
 @login_manager.user_loader
-def load_user(u_id):
+def load_user(u_id: int) -> User:
     return User(**get_user_info(u_id).to_dict(orient="records")[0])
 
 
 @app.route("/")
-def root():
+def root() -> Response:
     if current_user.is_authenticated:
         return redirect(url_for("projects"))
     return redirect(url_for("login"))
 
 
 @app.route("/login")
-def login():
+def login() -> str:
     return render_template("login.html")
 
 
 @app.route("/login", methods=["POST"])
-def login_post():
+def login_post() -> Response:
     username = request.form.get("username")
     pwd = request.form.get("password")
 
@@ -66,12 +67,12 @@ def login_post():
 
 
 @app.route("/signup")
-def signup():
+def signup() -> str:
     return render_template("signup.html")
 
 
 @app.route("/signup", methods=["POST"])
-def signup_post():
+def signup_post() -> Response:
     u_info = {
         "username": [request.form.get("username")],
         "password": [generate_password_hash(request.form.get("password"))],
@@ -88,7 +89,7 @@ def signup_post():
 
 @app.route("/projects")
 @login_required
-def projects():
+def projects() -> str:
     projects_dict = get_projects_for_projects_screen(current_user.u_id).to_dict(
         orient="index"
     )
@@ -102,7 +103,7 @@ def projects():
 
 @app.route("/project-page/<int:p_id>")
 @login_required
-def in_depth_project_page(p_id: int):
+def in_depth_project_page(p_id: int) -> str:
     p_info = get_project_info_for_in_depth_project_screen(p_id).iloc[0]
     assigned_u = get_users_from_list(p_info["assigned_users"].split(",")).to_dict(
         orient="index"
@@ -123,7 +124,7 @@ def in_depth_project_page(p_id: int):
 
 
 @app.route("/project-page/<int:p_id>", methods=["POST"])
-def in_depth_project_page_post(p_id: int):
+def in_depth_project_page_post(p_id: int) -> Response:
     new_info = {
         "p_id": p_id,
         "pname": request.form.get("pname"),
@@ -135,13 +136,13 @@ def in_depth_project_page_post(p_id: int):
 
 @app.route("/user")
 @login_required
-def user():
+def user() -> str:
     return render_template("user.html", cu=current_user, pic_link=current_user.pic_URL)
 
 
 @app.route("/user/<string:username>")
 @login_required
-def user_page(username: str):
+def user_page(username: str) -> str:
     user_info = get_user_info_by_username(username).to_dict(orient="index")[0]
     edit_permissions = check_user_edit_perm(current_user.u_id).iloc[0][
         "has_sufficient_perm"
@@ -156,7 +157,7 @@ def user_page(username: str):
 
 
 @app.route("/user/<string:username>", methods=["POST"])
-def user_page_post(username: str):
+def user_page_post(username: str) -> Response:
     r_exists = check_if_role_exists(request.form.get("role"))
     if r_exists.empty:
         flash("This role does not exist. Try different role.")
@@ -167,7 +168,7 @@ def user_page_post(username: str):
 
 
 @app.route("/user", methods=["POST"])
-def user_post():
+def user_post() -> Response:
     new_info = {
         "name": request.form.get("u-name"),
         "surname": request.form.get("u-surname"),
@@ -196,7 +197,7 @@ def user_post():
 
 @app.route("/customer/<string:cust_name>")
 @login_required
-def customer(cust_name: str):
+def customer(cust_name: str) -> str:
     c_info = get_customer_info_for_customer_screen(cust_name).iloc[0]
     cust_projects = get_projects_for_customer(c_info["cust_id"]).to_dict(orient="index")
     return render_template(
@@ -209,7 +210,7 @@ def customer(cust_name: str):
 
 
 @app.route("/customer/<string:cust_name>", methods=["POST"])
-def customer_post(cust_name: str):
+def customer_post(cust_name: str) -> Response:
     new_info = {
         "c_name": request.form.get("c-name"),
         "c_address": request.form.get("c-address"),
@@ -223,7 +224,7 @@ def customer_post(cust_name: str):
 
 @app.route("/logout")
 @login_required
-def logout():
+def logout() -> Response:
     logout_user()
     flash("you have successfully logged out")
     return redirect(url_for("login"))
@@ -231,7 +232,7 @@ def logout():
 
 @app.route("/dashboard")
 @login_required
-def dashboard():
+def dashboard() -> str:
     emp_roles_json, proj_cust_json, emp_proj_json = get_plots_for_dashboard()
     return render_template(
         "dashboard.html",
@@ -244,7 +245,7 @@ def dashboard():
 
 @app.route("/new/customer")
 @login_required
-def new_customer():
+def new_customer() -> str:
     return render_template(
         "new_customer.html",
         pic_link=current_user.pic_URL,
@@ -252,7 +253,7 @@ def new_customer():
 
 
 @app.route("/new/customer", methods=["POST"])
-def new_customer_post():
+def new_customer_post() -> Response:
     new_c = {
         "name": [request.form.get("c-name")],
     }
@@ -276,7 +277,7 @@ def new_customer_post():
 
 @app.route("/new/project")
 @login_required
-def new_project():
+def new_project() -> str:
     return render_template(
         "new_project.html",
         pic_link=current_user.pic_URL,
@@ -284,7 +285,7 @@ def new_project():
 
 
 @app.route("/new/project", methods=["POST"])
-def new_project_post():
+def new_project_post() -> Response:
     new_p = {
         "p_name": [request.form.get("pname")],
         "cust_id": [request.form.get("cname")],
