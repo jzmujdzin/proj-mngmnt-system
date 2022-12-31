@@ -13,3 +13,12 @@ It offers a company to track it's projects, customers and users. <br>
 - editable customer profiles
 - dashboard with information about projects per customer, number of people at each role, assigned users for each project
 - login and signup page with hashed password validation
+## Packages used:
+- Flask 2.1.2
+- Flask_Login 0.6.2
+- loguru 0.6.0
+- pandas 1.2.3
+- plotly 5.6.0
+- Werkzeug 2.1.2 
+
+Project was developed on Python 3.8
