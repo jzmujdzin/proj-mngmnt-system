@@ -249,7 +249,7 @@ def get_plots_for_dashboard() -> Tuple[str, str, str]:
     employee_projects = get_projects_and_users_num()
     fig_emp_roles = px.bar(employee_roles, x="role", y="number")
     fig_proj_cust = px.bar(projects_customers, x="name", y="number")
-    fig_emp_proj = px.bar(employee_projects, x="p_name", y="users_num")
+    fig_emp_proj = px.bar(employee_projects, x="p_name", y="users_num", labels={'p_name': 'name of project', 'users_num': 'number of users'})
     plot_layout_dict = {
         "plot_bgcolor": "#808080",
         "paper_bgcolor": "#808080",

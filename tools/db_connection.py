@@ -6,7 +6,7 @@ import pandas as pd
 
 
 def select_wrapper(
-    q_to_execute: callable,
+    q_to_execute: Callable,
 ) -> Callable[
     [Tuple[Any, ...], Dict[str, Any]], Union[Iterator[pd.DataFrame], pd.DataFrame]
 ]:
@@ -20,7 +20,7 @@ def select_wrapper(
 
 
 def tx_wrapper(
-    tx_to_execute: callable,
+    tx_to_execute: Callable,
 ) -> Callable[[Tuple[Any, ...], Dict[str, Any]], None]:
     def wrapper(*args, **kwargs):
         con = sqlite3.connect(Path(__file__).parents[1] / "cpmgs_db")
